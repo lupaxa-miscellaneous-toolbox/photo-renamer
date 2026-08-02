@@ -87,7 +87,7 @@ photo-renamer/
 │   ├── utils.py
 │   └── exceptions.py
 ├── tests/
-├── docs/                    # MkDocs content
+├── mkdocs/                  # MkDocs content (not docs/ — reserved by GitHub)
 └── cursor-docs/superpowers/ # design & plans
 ```
 

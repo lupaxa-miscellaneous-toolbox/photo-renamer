@@ -1,31 +1,158 @@
-site_name: lupaxa-photo-renamer
-site_description: Safely rename photographs and videos using capture timestamps
+# =============================================================================
+# Site Information
+# =============================================================================
+
+site_name: Photo Renamer
+
+site_description: >-
+  Safely rename photographs and videos into consistent date-based filenames.
+
+site_author: The Lupaxa Project
+
 site_url: https://lupaxa-code-playground.github.io/photo-renamer/
-repo_url: https://github.com/lupaxa-code-playground/photo-renamer
+
 repo_name: lupaxa-code-playground/photo-renamer
+repo_url: https://github.com/lupaxa-code-playground/photo-renamer
+
+extra:
+  generator: false
+  # Hide left site nav (header already lists pages); keep on-this-page TOC.
+  hide_primary_sidebar: false
+  repo_display_name: Photo Renamer
+  # Footer (rendered by overrides/partials/copyright.html; year set in-browser).
+  start_year: 2026
+  footer_name: The Lupaxa Project
+  footer_taglines:
+    - Where exploration meets precision.
+    - Where the untamed meets the engineered.
+  # Counter.dev analytics (omit counter_dev_id to disable).
+  # counter_dev_id: <uuid>
+  counter_dev_utcoffset: 0
+  social_image: assets/images/social-card.png
+  social_image_width: 1200
+  social_image_height: 630
+  social_logo: assets/images/logo.png
+  social_locale: en_GB
+  theme_color: "#203959"
+  twitter_card: summary_large_image
+
+# =============================================================================
+# Content
+# =============================================================================
+
+docs_dir: mkdocs
+site_dir: site
+use_directory_urls: true
+
+# =============================================================================
+# Theme
+# =============================================================================
 
 theme:
   name: material
+  custom_dir: overrides
+  language: en
+  logo: assets/images/logo.png
+  favicon: assets/images/favicon.png
+
   features:
-    - navigation.sections
     - content.code.copy
+    - content.tooltips
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.top
+    - navigation.sections
+    - toc.follow
+
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+  icon:
+    repo: fontawesome/brands/github
+
+# =============================================================================
+# Plugins
+# =============================================================================
+
+plugins:
+  - search
+
+# =============================================================================
+# Navigation
+# =============================================================================
 
 nav:
   - Home: index.md
-  - Installation: installation.md
+  - Getting started: getting-started.md
   - Usage: usage.md
-  - Command reference: command-reference.md
+  - Reference: reference.md
   - Examples: examples.md
-  - Metadata: metadata.md
-  - Source detection: source-detection.md
-  - Organising media: organising.md
-  - Troubleshooting and FAQ: troubleshooting.md
-  - Development: development.md
 
 markdown_extensions:
+  - abbr
   - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
   - tables
   - toc:
-      permalink: true
+      permalink: false
+      permalink_title: Link to this section
+  - pymdownx.blocks.caption
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
 
-strict: true
+# =============================================================================
+# Additional Assets
+# =============================================================================
+
+extra_css:
+  - assets/stylesheets/00-tokens.css
+  - assets/stylesheets/10-base.css
+  - assets/stylesheets/20-layout.css
+  - assets/stylesheets/30-navigation.css
+  - assets/stylesheets/40-components/buttons.css
+  - assets/stylesheets/40-components/footer.css
+  - assets/stylesheets/40-components/hero.css
+  - assets/stylesheets/40-components/tables.css
+  - assets/stylesheets/90-responsive.css
+  - assets/stylesheets/95-print.css
+  - assets/stylesheets/99-overrides.css
+
+extra_javascript:
+  - assets/javascript/page-lifecycle.js
+  - assets/javascript/header-active-nav.js
+
+# =============================================================================
+# Copyright (rendered by overrides/partials/copyright.html; year set in-browser)
+# =============================================================================

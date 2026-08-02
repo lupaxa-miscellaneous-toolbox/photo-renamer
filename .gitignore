@@ -1,4 +1,5 @@
 .worktrees/
+.makefiles/
 __pycache__/
 *.py[cod]
 .venv/

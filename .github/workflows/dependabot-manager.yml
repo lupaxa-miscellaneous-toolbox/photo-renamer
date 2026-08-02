@@ -1,0 +1,40 @@
+name: Dependabot Manager
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot:
+    name: Dependabot
+    uses: the-lupaxa-project/workflows/.github/workflows/reusable-dependabot-manager.yml@master
+    secrets: inherit
+
+  status-check:
+    name: Dependabot Status
+    needs:
+      - dependabot
+    if: always()
+    # 🔴 IMPORTANT: this is a *job-level* uses, not under steps:
+    uses: the-lupaxa-project/workflows/.github/workflows/reusable-workflow-summary.yml@master
+
+  slack-workflow-status:
+    name: Slack Workflow Status
+    needs:
+      - status-check
+    if: always()
+
+    uses: the-lupaxa-project/workflows/.github/workflows/reusable-workflow-notifier.yml@master
+    with:
+      notify_on_results: "failure,timed_out"
+      ignore_jobs: "Check Jobs Status"
+    secrets:
+      slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

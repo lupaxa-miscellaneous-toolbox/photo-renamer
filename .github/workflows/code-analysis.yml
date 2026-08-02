@@ -1,0 +1,52 @@
+name: Code Analysis
+
+on:
+  push:
+    branches-ignore:
+      - "dependabot/"
+    paths-ignore:
+      - "**/*.md"
+  pull_request:
+    branches:
+      - "**"
+    paths-ignore:
+      - "**/*.md"
+  schedule:
+    - cron: "4 3 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  codeql:
+    uses: the-lupaxa-project/workflows/.github/workflows/reusable-code-analysis.yml@master
+    with:
+      languages: "python"
+
+  status-check:
+    name: CodeQL Status
+    needs:
+      - codeql
+    if: always()
+    # 🔴 IMPORTANT: this is a *job-level* uses, not under steps:
+    uses: the-lupaxa-project/workflows/.github/workflows/reusable-workflow-summary.yml@master
+
+  slack-workflow-status:
+    name: Slack Workflow Status
+    needs:
+      - status-check
+    if: always()
+
+    uses: the-lupaxa-project/workflows/.github/workflows/reusable-workflow-notifier.yml@master
+    with:
+      notify_on_results: "failure,timed_out"
+      ignore_jobs: "Check Jobs Status"
+    secrets:
+      slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

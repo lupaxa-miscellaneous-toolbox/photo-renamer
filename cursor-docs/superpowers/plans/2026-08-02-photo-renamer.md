@@ -49,7 +49,7 @@
 | `src/lupaxa/photo_renamer/pipeline.py` | End-to-end run over scanned files |
 | `src/lupaxa/photo_renamer/cli.py` | `main()` entry |
 | `tests/` | Unit and CLI tests |
-| `docs/` + `mkdocs.yml` | MkDocs site |
+| `mkdocs/` + `mkdocs.yml` | MkDocs site (`docs_dir: mkdocs`) |
 | `requirements.txt` | Runtime deps mirror |
 
 Note: `models.py` and `pipeline.py` are intentional additions beyond the original sketch so shared types and orchestration stay testable without bloating `cli.py`.

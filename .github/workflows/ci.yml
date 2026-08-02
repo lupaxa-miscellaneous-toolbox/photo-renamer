@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  python-ci:
+    name: Lint & Test
+    uses: the-lupaxa-project/workflows/.github/workflows/reusable-python-makefile-ci.yml@master
+    secrets: inherit
+    with:
+      python-versions: '["3.13", "3.14"]'
+      install-target: install-dev
+      ci-target: check
+
+  status-check:
+    name: CI Status
+    needs:
+      - python-ci
+    if: always()
+    uses: the-lupaxa-project/workflows/.github/workflows/reusable-workflow-summary.yml@master
+
+  slack-workflow-status:
+    name: Slack Workflow Status
+    needs:
+      - status-check
+    if: always()
+    uses: the-lupaxa-project/workflows/.github/workflows/reusable-workflow-notifier.yml@master
+    with:
+      notify_on_results: "failure,timed_out"
+      ignore_jobs: "Check Jobs Status"
+    secrets:
+      slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

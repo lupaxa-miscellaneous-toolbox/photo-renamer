@@ -3,3 +3,6 @@ Pillow>=10.0
 pillow-heif>=0.16
 platformdirs>=4.0
 pymediainfo>=6.0
+
+mkdocs==1.6.1
+mkdocs-material==9.7.7
