@@ -88,6 +88,20 @@ audit events on real runs (not dry runs).
 Use `--verbose` for per-file actions or `--quiet` to suppress Rich output. They
 cannot be used together.
 
+## Parallel workers
+
+```bash
+photo-renamer --workers 4 ~/Pictures
+```
+
+`--workers` controls how many copy/move operations run at once (default `1`).
+Planning stays sequential so collision-safe names are unchanged. Progress shows a
+planning phase, then a copy/move (or dry-run) phase.
+
+If `--workers` is greater than twice the detected CPU count, photo-renamer asks
+for confirmation. Use `--yes` / `-y` to accept non-interactively (for example in
+CI).
+
 ## Troubleshooting
 
 ### No files are scanned

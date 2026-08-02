@@ -102,6 +102,8 @@ photo-renamer --recursive --output /Volumes/Archive --move ~/Pictures
 | `--force`                                 | Process matching names even with `--skip-existing`  |
 | `--timezone ZONE`                         | Convert timestamps to an IANA zone before naming    |
 | `--log-file PATH`                         | Append a tab-separated audit log                    |
+| `--workers N`                             | Concurrent copy/move workers (default `1`)          |
+| `--yes` / `-y`                            | Assume yes for over-cap workers confirmation        |
 | `--verbose` / `--quiet`                   | Increase or suppress terminal output                |
 
 Run `photo-renamer --help` for the authoritative command syntax.
