@@ -9,6 +9,7 @@ from rich.console import Console
 from lupaxa.photo_renamer.config import AppConfig, parse_args
 from lupaxa.photo_renamer.exceptions import ConfigError
 from lupaxa.photo_renamer.pipeline import run
+from lupaxa.photo_renamer.workers import confirm_workers
 
 
 def parse_arguments(argv: list[str] | None = None) -> AppConfig:
@@ -20,6 +21,7 @@ def main(argv: list[str] | None = None) -> int:
     """Run the rename pipeline and map its outcome to a process exit code."""
     try:
         config = parse_arguments(argv)
+        confirm_workers(config.workers, assume_yes=config.assume_yes)
     except ConfigError as exc:
         print(exc, file=sys.stderr)
         return 2
