@@ -8,8 +8,7 @@ def test_build_filename_formats() -> None:
     assert build_filename(dt, "JPG", "datetime", "WhatsApp") == "2026-08-01_14-55-22.jpg"
     assert build_filename(dt, "jpg", "source", "WhatsApp") == "2026-08-01_14-55-22_WhatsApp.jpg"
     assert (
-        build_filename(dt, "jpg", "source-first", "WhatsApp")
-        == "WhatsApp_2026-08-01_14-55-22.jpg"
+        build_filename(dt, "jpg", "source-first", "WhatsApp") == "WhatsApp_2026-08-01_14-55-22.jpg"
     )
 
 

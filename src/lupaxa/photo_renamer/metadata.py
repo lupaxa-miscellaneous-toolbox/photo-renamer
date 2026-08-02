@@ -111,11 +111,7 @@ def _apply_timezone(value: datetime, timezone: ZoneInfo | None) -> datetime:
     """Convert *value* to *timezone* and return naive wall-clock components."""
     if timezone is None:
         return value
-    value = (
-        value.replace(tzinfo=timezone)
-        if value.tzinfo is None
-        else value.astimezone(timezone)
-    )
+    value = value.replace(tzinfo=timezone) if value.tzinfo is None else value.astimezone(timezone)
     return value.replace(tzinfo=None)
 
 

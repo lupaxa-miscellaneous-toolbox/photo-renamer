@@ -145,9 +145,10 @@ def run(config: AppConfig, console: Console | None = None) -> RunStats:
     reserved: set[Path] = set()
     print_startup(console, config, len(media_files))
 
-    with _log_context(config) as writer, _progress_context(
-        console, config, len(media_files)
-    ) as progress:
+    with (
+        _log_context(config) as writer,
+        _progress_context(console, config, len(media_files)) as progress,
+    ):
         task_id = progress.task_ids[0] if progress is not None else None
         for media in media_files:
             plan: RenamePlan | None = None

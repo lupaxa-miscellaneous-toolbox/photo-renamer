@@ -29,13 +29,10 @@ def is_supported_extension(
     allowed = include if include is not None else set(DEFAULT_EXTENSIONS)
     allowed = {normalize_extension(e) for e in allowed}
     return normalized in allowed and (
-        exclude is None
-        or normalized not in {normalize_extension(e) for e in exclude}
+        exclude is None or normalized not in {normalize_extension(e) for e in exclude}
     )
 
 
 def user_log_dir() -> Path:
     """Return the platform-specific log directory for this application."""
-    return Path(
-        platformdirs.user_log_dir(appname="lupaxa-photo-renamer", appauthor="Lupaxa")
-    )
+    return Path(platformdirs.user_log_dir(appname="lupaxa-photo-renamer", appauthor="Lupaxa"))
