@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Self
 from unittest.mock import patch
 
 import pytest
@@ -229,6 +230,100 @@ def test_dry_run_does_not_create_log_file(tmp_path: Path) -> None:
     with patch("lupaxa.photo_renamer.pipeline.extract_timestamp", return_value=_timestamp()):
         run(_cfg(tmp_path, dry_run=True, log_file=log_file))
     assert not log_file.exists()
+
+
+def test_workers_two_processes_all_files(tmp_path: Path) -> None:
+    root_a = tmp_path / "a"
+    root_b = tmp_path / "b"
+    for root in (root_a, root_b):
+        root.mkdir()
+        for index in range(5):
+            (root / f"photo-{index}.jpg").write_bytes(f"data-{index}".encode())
+
+    def fake_timestamp(path: Path, *args: object, **kwargs: object) -> TimestampResult:
+        stamp = int(path.stem.split("-")[1])
+        return TimestampResult(
+            value=datetime(2026, 8, 1, 13, 45, stamp),
+            origin="filesystem",
+            missing=False,
+        )
+
+    with patch("lupaxa.photo_renamer.pipeline.extract_timestamp", side_effect=fake_timestamp):
+        stats_one = run(_cfg(root_a, workers=1))
+        stats_two = run(_cfg(root_b, workers=2))
+
+    names_one = sorted(p.name for p in (root_a / "renamed").glob("*.jpg"))
+    names_two = sorted(p.name for p in (root_b / "renamed").glob("*.jpg"))
+    assert names_one == names_two
+    assert stats_one.processed == stats_two.processed == 5
+    assert stats_one.failed == stats_two.failed == 0
+
+
+def test_pipeline_uses_planning_then_apply_progress(tmp_path: Path) -> None:
+    src = tmp_path / "photo.jpg"
+    src.write_bytes(b"abc")
+    descriptions: list[str] = []
+
+    class FakeProgress:
+        def __enter__(self: Self) -> Self:
+            return self
+
+        def __exit__(self: Self, *args: object) -> None:
+            return None
+
+        @property
+        def task_ids(self: Self) -> list[int]:
+            return [0]
+
+        def advance(self: Self, task_id: int) -> None:
+            return None
+
+    def fake_make_progress(console: object, total: int, description: str) -> FakeProgress:
+        descriptions.append(description)
+        return FakeProgress()
+
+    with (
+        patch("lupaxa.photo_renamer.pipeline.extract_timestamp", return_value=_timestamp()),
+        patch("lupaxa.photo_renamer.pipeline.make_progress", side_effect=fake_make_progress),
+    ):
+        run(_cfg(tmp_path, quiet=False, workers=1), console=Console(quiet=True))
+
+    assert descriptions == ["Planning media", "Copying media"]
+
+
+def test_apply_phase_description_for_move_and_dry_run(tmp_path: Path) -> None:
+    src = tmp_path / "photo.jpg"
+    src.write_bytes(b"abc")
+    descriptions: list[str] = []
+
+    def fake_make_progress(console: object, total: int, description: str) -> object:
+        descriptions.append(description)
+
+        class _P:
+            def __enter__(self: Self) -> Self:
+                return self
+
+            def __exit__(self: Self, *args: object) -> None:
+                return None
+
+            @property
+            def task_ids(self: Self) -> list[int]:
+                return [0]
+
+            def advance(self: Self, task_id: int) -> None:
+                return None
+
+        return _P()
+
+    with (
+        patch("lupaxa.photo_renamer.pipeline.extract_timestamp", return_value=_timestamp()),
+        patch("lupaxa.photo_renamer.pipeline.make_progress", side_effect=fake_make_progress),
+    ):
+        run(_cfg(tmp_path, quiet=False, move=True), console=Console(quiet=True))
+        run(_cfg(tmp_path, quiet=False, dry_run=True), console=Console(quiet=True))
+
+    assert "Moving media" in descriptions
+    assert "Dry-run apply" in descriptions
 
 
 def test_verbose_prints_file_action_and_quiet_suppresses_output(tmp_path: Path) -> None:

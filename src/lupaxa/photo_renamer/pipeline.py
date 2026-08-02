@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
 
@@ -119,10 +120,31 @@ def _progress_context(
     console: Console,
     config: AppConfig,
     total: int,
+    description: str,
 ) -> AbstractContextManager[Progress | None]:
     if config.quiet:
         return nullcontext(None)
-    return make_progress(console, total, "Renaming media")
+    return make_progress(console, total, description)
+
+
+def _log_failure(
+    writer: LogWriter | None,
+    console: Console,
+    config: AppConfig,
+    plan: RenamePlan,
+    exc: Exception,
+) -> None:
+    if writer is not None:
+        writer.write_event(
+            action="failed",
+            source=plan.source,
+            destination=plan.destination,
+            source_label=plan.detected_source,
+            origin=plan.timestamp.origin,
+            message=str(exc),
+        )
+    if config.verbose and not config.quiet:
+        console.print(f"[red]failed[/red] {plan.source}: {exc}")
 
 
 def _log_context(config: AppConfig) -> AbstractContextManager[LogWriter | None]:
@@ -150,54 +172,82 @@ def run(config: AppConfig, console: Console | None = None) -> RunStats:
         for scan_error in scan_errors:
             console.print(f"[red]failed[/red] {scan_error.path}: {scan_error.message}")
 
-    with (
-        _log_context(config) as writer,
-        _progress_context(console, config, len(media_files)) as progress,
-    ):
-        task_id = progress.task_ids[0] if progress is not None else None
-        for media in media_files:
-            plan: RenamePlan | None = None
-            try:
-                plan, collided = _plan_file(media, config, reserved)
-                if collided:
-                    stats.collisions += 1
+    actionable: list[RenamePlan] = []
+    with _log_context(config) as writer:
+        with _progress_context(console, config, len(media_files), "Planning media") as progress:
+            task_id = progress.task_ids[0] if progress is not None else None
+            for media in media_files:
+                plan: RenamePlan | None = None
+                try:
+                    plan, collided = _plan_file(media, config, reserved)
+                    if collided:
+                        stats.collisions += 1
 
-                if plan.skipped_reason == _MISSING_METADATA:
+                    if plan.skipped_reason == _MISSING_METADATA:
+                        stats.failed += 1
+                        stats.metadata_missing += 1
+                        _write_log(writer, plan, _MISSING_METADATA)
+                        _show_verbose(console, config, plan, _MISSING_METADATA)
+                    elif plan.action == "skip":
+                        stats.skipped += 1
+                        reason = plan.skipped_reason or "skipped"
+                        _write_log(writer, plan, reason)
+                        _show_verbose(console, config, plan, reason)
+                    else:
+                        actionable.append(plan)
+                except OSError as exc:
                     stats.failed += 1
-                    stats.metadata_missing += 1
-                    _write_log(writer, plan, _MISSING_METADATA)
-                    _show_verbose(console, config, plan, _MISSING_METADATA)
-                elif plan.action == "skip":
-                    stats.skipped += 1
-                    reason = plan.skipped_reason or "skipped"
-                    _write_log(writer, plan, reason)
-                    _show_verbose(console, config, plan, reason)
-                else:
-                    apply_plan(plan, dry_run=config.dry_run)
-                    stats.processed += 1
-                    message = " (dry-run)" if config.dry_run else ""
-                    _write_log(writer, plan, message.strip())
-                    _show_verbose(console, config, plan, message)
-            except OSError as exc:
-                stats.failed += 1
-                if writer is not None:
-                    writer.write_event(
-                        action="failed",
-                        source=media.path,
-                        destination=plan.destination if plan is not None else None,
-                        source_label=(
-                            plan.detected_source
-                            if plan is not None
-                            else detect_source(media.path.name)
-                        ),
-                        origin=plan.timestamp.origin if plan is not None else "none",
-                        message=str(exc),
-                    )
-                if config.verbose and not config.quiet:
-                    console.print(f"[red]failed[/red] {media.path}: {exc}")
-            finally:
-                if progress is not None and task_id is not None:
-                    progress.advance(task_id)
+                    if writer is not None:
+                        writer.write_event(
+                            action="failed",
+                            source=media.path,
+                            destination=plan.destination if plan is not None else None,
+                            source_label=(
+                                plan.detected_source
+                                if plan is not None
+                                else detect_source(media.path.name)
+                            ),
+                            origin=plan.timestamp.origin if plan is not None else "none",
+                            message=str(exc),
+                        )
+                    if config.verbose and not config.quiet:
+                        console.print(f"[red]failed[/red] {media.path}: {exc}")
+                finally:
+                    if progress is not None and task_id is not None:
+                        progress.advance(task_id)
+
+        apply_description = (
+            "Dry-run apply"
+            if config.dry_run
+            else ("Moving media" if config.move else "Copying media")
+        )
+        with _progress_context(console, config, len(actionable), apply_description) as progress:
+            task_id = progress.task_ids[0] if progress is not None else None
+
+            def _apply(plan: RenamePlan) -> RenamePlan:
+                apply_plan(plan, dry_run=config.dry_run)
+                return plan
+
+            with ThreadPoolExecutor(max_workers=config.workers) as executor:
+                futures = {executor.submit(_apply, plan): plan for plan in actionable}
+                for future in as_completed(futures):
+                    plan = futures[future]
+                    try:
+                        future.result()
+                    except OSError as exc:
+                        stats.failed += 1
+                        _log_failure(writer, console, config, plan, exc)
+                    except Exception as exc:  # noqa: BLE001 - surface unexpected worker errors
+                        stats.failed += 1
+                        _log_failure(writer, console, config, plan, exc)
+                    else:
+                        stats.processed += 1
+                        message = " (dry-run)" if config.dry_run else ""
+                        _write_log(writer, plan, message.strip())
+                        _show_verbose(console, config, plan, message)
+                    finally:
+                        if progress is not None and task_id is not None:
+                            progress.advance(task_id)
 
     if not config.quiet:
         print_summary(console, stats)
