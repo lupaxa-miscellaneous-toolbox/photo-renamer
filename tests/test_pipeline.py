@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
@@ -125,7 +126,8 @@ def test_collision_is_counted_and_never_overwritten(tmp_path: Path) -> None:
     assert (output / "2026-08-01_13-45-22_001.jpg").read_bytes() == b"new"
 
 
-def test_apply_plan_refuses_dangling_symlink_destination(tmp_path: Path) -> None:
+@pytest.mark.parametrize("action", [("copy",), ("move",)])
+def test_apply_plan_refuses_dangling_symlink_destination(tmp_path: Path, action: str) -> None:
     source = tmp_path / "photo.jpg"
     source.write_bytes(b"new")
     destination = tmp_path / "renamed.jpg"
@@ -136,7 +138,7 @@ def test_apply_plan_refuses_dangling_symlink_destination(tmp_path: Path) -> None
         destination=destination,
         detected_source="Camera",
         timestamp=_timestamp(),
-        action="copy",
+        action=action,  # type: ignore[arg-type]
         skipped_reason=None,
     )
 
@@ -148,7 +150,7 @@ def test_apply_plan_refuses_dangling_symlink_destination(tmp_path: Path) -> None
     assert not missing_target.exists()
 
 
-def test_apply_plan_move_refuses_destination_created_after_precheck(
+def test_apply_plan_move_refuses_destination_claimed_during_link(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -163,13 +165,18 @@ def test_apply_plan_move_refuses_destination_created_after_precheck(
         action="move",
         skipped_reason=None,
     )
-    original_mkdir = Path.mkdir
+    original_link = os.link
 
-    def mkdir_and_create_destination(path: Path, *args: object, **kwargs: object) -> None:
-        original_mkdir(path, *args, **kwargs)  # type: ignore[arg-type]
-        destination.write_bytes(b"racer")
+    def link_after_competitor(
+        source_path: Path,
+        destination_path: Path,
+        *args: object,
+        **kwargs: object,
+    ) -> None:
+        destination_path.write_bytes(b"racer")
+        original_link(source_path, destination_path, *args, **kwargs)  # type: ignore[arg-type]
 
-    monkeypatch.setattr(Path, "mkdir", mkdir_and_create_destination)
+    monkeypatch.setattr(os, "link", link_after_competitor)
 
     with pytest.raises(FileExistsError):
         apply_plan(plan, dry_run=False)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 import os
 import re
 import shutil
@@ -52,24 +53,18 @@ def is_already_named(filename: str) -> bool:
 
 
 def _move_exclusive(source: Path, destination: Path) -> None:
-    """Move *source* after exclusively claiming *destination*."""
-    descriptor = os.open(destination, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    """Move *source* without clobbering, using a hard link on one filesystem."""
     try:
-        placeholder = os.fstat(descriptor)
-    finally:
-        os.close(descriptor)
-
-    try:
-        os.replace(source, destination)
-    except OSError:
-        try:
-            current = os.lstat(destination)
-        except FileNotFoundError:
-            pass
-        else:
-            if (current.st_dev, current.st_ino) == (placeholder.st_dev, placeholder.st_ino):
-                destination.unlink()
-        raise
+        os.link(source, destination)
+    except OSError as exc:
+        if exc.errno != errno.EXDEV:
+            raise
+        with destination.open("xb") as out_f, source.open("rb") as in_f:
+            shutil.copyfileobj(in_f, out_f)
+        shutil.copystat(source, destination, follow_symlinks=True)
+        source.unlink()
+        return
+    source.unlink()
 
 
 def apply_plan(plan: RenamePlan, *, dry_run: bool) -> None:
