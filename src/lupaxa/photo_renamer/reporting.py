@@ -28,6 +28,7 @@ def print_startup(console: Console, config: AppConfig, file_count: int) -> None:
         f"Root: {config.root}",
         f"Output: {config.output_dir}",
         f"Files: {file_count}",
+        f"Workers: {config.workers}",
         f"Operation: {operation}",
         f"Recursive: {config.recursive}",
         f"Format: {config.name_format}",
