@@ -23,11 +23,10 @@ def is_supported_extension(
     normalized = normalize_extension(ext)
     allowed = include if include is not None else set(DEFAULT_EXTENSIONS)
     allowed = {normalize_extension(e) for e in allowed}
-    if normalized not in allowed:
-        return False
-    if exclude is not None and normalized in {normalize_extension(e) for e in exclude}:
-        return False
-    return True
+    return normalized in allowed and (
+        exclude is None
+        or normalized not in {normalize_extension(e) for e in exclude}
+    )
 
 
 def user_log_dir() -> Path:
