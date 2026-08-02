@@ -8,10 +8,9 @@ from pathlib import Path
 from typing import Never, cast
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from lupaxa.photo_renamer.constants import DEFAULT_EXTENSIONS
 from lupaxa.photo_renamer.exceptions import ConfigError
 from lupaxa.photo_renamer.models import NameFormat, TimestampMode
-from lupaxa.photo_renamer.utils import normalize_extension
+from lupaxa.photo_renamer.utils import DEFAULT_EXTENSIONS, normalize_extension
 
 
 @dataclass(frozen=True)

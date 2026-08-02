@@ -6,7 +6,9 @@ from pathlib import Path
 
 import platformdirs
 
-from lupaxa.photo_renamer.constants import DEFAULT_EXTENSIONS
+from lupaxa.photo_renamer.constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
+
+DEFAULT_EXTENSIONS: frozenset[str] = IMAGE_EXTENSIONS | VIDEO_EXTENSIONS
 
 
 def path_is_taken(path: Path) -> bool:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -13,12 +14,10 @@ from pymediainfo import MediaInfo
 from lupaxa.photo_renamer.constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
 from lupaxa.photo_renamer.models import TimestampMode, TimestampOrigin, TimestampResult
 
-try:
+with suppress(ImportError, OSError):
     from pillow_heif import register_heif_opener
 
     register_heif_opener()
-except (ImportError, OSError):
-    pass
 
 _EXIF_DATETIME_TAGS = (36867, 36868, 306)
 _MEDIAINFO_DATETIME_FIELDS = (
