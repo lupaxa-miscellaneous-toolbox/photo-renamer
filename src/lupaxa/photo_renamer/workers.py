@@ -38,9 +38,6 @@ def confirm_workers(
 
     err_stream.write(message)
     err_stream.flush()
-    try:
-        answer = in_stream.readline()
-    except EOFError as exc:
-        raise ConfigError("workers confirmation cancelled") from exc
-    if answer is None or answer.strip().lower() not in {"y", "yes"}:
+    answer = in_stream.readline()
+    if answer.strip().lower() not in {"y", "yes"}:
         raise ConfigError("workers confirmation cancelled")

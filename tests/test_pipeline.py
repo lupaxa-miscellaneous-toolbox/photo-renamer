@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Self
@@ -257,6 +258,74 @@ def test_workers_two_processes_all_files(tmp_path: Path) -> None:
     assert names_one == names_two
     assert stats_one.processed == stats_two.processed == 5
     assert stats_one.failed == stats_two.failed == 0
+
+
+def test_workers_two_processes_all_files_with_collisions(tmp_path: Path) -> None:
+    """workers=1 and workers=2 must resolve identical collisions on shared timestamps."""
+    root_a = tmp_path / "a"
+    root_b = tmp_path / "b"
+    file_count = 6
+    for root in (root_a, root_b):
+        root.mkdir()
+        for index in range(file_count):
+            (root / f"photo-{index}.jpg").write_bytes(f"data-{index}".encode())
+
+    def fake_timestamp(path: Path, *args: object, **kwargs: object) -> TimestampResult:
+        # Two groups of three files share a timestamp each, forcing collisions.
+        stamp = int(path.stem.split("-")[1])
+        group_second = 0 if stamp < 3 else 1
+        return TimestampResult(
+            value=datetime(2026, 8, 1, 13, 45, group_second),
+            origin="filesystem",
+            missing=False,
+        )
+
+    with patch("lupaxa.photo_renamer.pipeline.extract_timestamp", side_effect=fake_timestamp):
+        stats_one = run(_cfg(root_a, workers=1))
+        stats_two = run(_cfg(root_b, workers=2))
+
+    names_one = sorted(p.name for p in (root_a / "renamed").glob("*.jpg"))
+    names_two = sorted(p.name for p in (root_b / "renamed").glob("*.jpg"))
+    assert names_one == names_two
+    assert stats_one.processed == stats_two.processed == file_count
+    assert stats_one.failed == stats_two.failed == 0
+    # Two groups of three colliding files each contribute two collisions.
+    assert stats_one.collisions == stats_two.collisions == 4
+
+
+def test_keyboard_interrupt_aborts_apply_phase(tmp_path: Path) -> None:
+    """Ctrl-C during apply must cancel pending work instead of draining the queue."""
+    file_count = 40
+    for index in range(file_count):
+        (tmp_path / f"photo-{index:03d}.jpg").write_bytes(f"data-{index}".encode())
+
+    def fake_timestamp(path: Path, *args: object, **kwargs: object) -> TimestampResult:
+        stamp = int(path.stem.split("-")[1])
+        return TimestampResult(
+            value=datetime(2026, 8, 1, 13, 45, stamp % 60),
+            origin="filesystem",
+            missing=False,
+        )
+
+    call_count = 0
+
+    def flaky_apply(plan: RenamePlan, *, dry_run: bool) -> None:
+        nonlocal call_count
+        call_count += 1
+        if call_count == 2:
+            raise KeyboardInterrupt
+        time.sleep(0.01)
+        apply_plan(plan, dry_run=dry_run)
+
+    with (
+        patch("lupaxa.photo_renamer.pipeline.extract_timestamp", side_effect=fake_timestamp),
+        patch("lupaxa.photo_renamer.pipeline.apply_plan", side_effect=flaky_apply),
+        pytest.raises(KeyboardInterrupt),
+    ):
+        run(_cfg(tmp_path, workers=1))
+
+    destinations = list((tmp_path / "renamed").glob("*.jpg"))
+    assert len(destinations) < file_count // 2
 
 
 def test_pipeline_uses_planning_then_apply_progress(tmp_path: Path) -> None:

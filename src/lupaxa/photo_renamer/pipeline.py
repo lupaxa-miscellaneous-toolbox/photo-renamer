@@ -230,24 +230,27 @@ def run(config: AppConfig, console: Console | None = None) -> RunStats:
 
             with ThreadPoolExecutor(max_workers=config.workers) as executor:
                 futures = {executor.submit(_apply, plan): plan for plan in actionable}
-                for future in as_completed(futures):
-                    plan = futures[future]
-                    try:
-                        future.result()
-                    except OSError as exc:
-                        stats.failed += 1
-                        _log_failure(writer, console, config, plan, exc)
-                    except Exception as exc:  # noqa: BLE001 - surface unexpected worker errors
-                        stats.failed += 1
-                        _log_failure(writer, console, config, plan, exc)
-                    else:
-                        stats.processed += 1
-                        message = " (dry-run)" if config.dry_run else ""
-                        _write_log(writer, plan, message.strip())
-                        _show_verbose(console, config, plan, message)
-                    finally:
-                        if progress is not None and task_id is not None:
-                            progress.advance(task_id)
+                try:
+                    for future in as_completed(futures):
+                        plan = futures[future]
+                        try:
+                            future.result()
+                        except Exception as exc:
+                            stats.failed += 1
+                            _log_failure(writer, console, config, plan, exc)
+                        else:
+                            stats.processed += 1
+                            message = " (dry-run)" if config.dry_run else ""
+                            _write_log(writer, plan, message.strip())
+                            _show_verbose(console, config, plan, message)
+                        finally:
+                            if progress is not None and task_id is not None:
+                                progress.advance(task_id)
+                except KeyboardInterrupt:
+                    # Drop unstarted work immediately instead of letting the
+                    # executor's context-manager exit drain the whole queue.
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    raise
 
     if not config.quiet:
         print_summary(console, stats)
