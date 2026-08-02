@@ -28,9 +28,7 @@ def confirm_workers(
 
     in_stream = stdin if stdin is not None else sys.stdin
     err_stream = stderr if stderr is not None else sys.stderr
-    message = (
-        f"Workers {workers} exceeds recommended max {limit} (CPU×2). Continue? [y/N] "
-    )
+    message = f"Workers {workers} exceeds recommended max {limit} (CPU×2). Continue? [y/N] "
 
     if not in_stream.isatty():
         raise ConfigError(
