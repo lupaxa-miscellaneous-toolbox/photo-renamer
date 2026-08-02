@@ -274,4 +274,4 @@ Architecture leaves clear extension points without implementing them:
 - Clear Rich output and optional log file
 - Comprehensive README + MkDocs
 - Packaged as `lupaxa-photo-renamer` suitable for publishing
-`)
+)
