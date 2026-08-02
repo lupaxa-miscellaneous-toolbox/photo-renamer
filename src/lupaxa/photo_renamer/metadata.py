@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from PIL import Image
+from PIL import ExifTags, Image
 from pymediainfo import MediaInfo
 
 from lupaxa.photo_renamer.constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
@@ -48,8 +48,12 @@ def _read_image_exif_datetime(path: Path) -> datetime | None:
                 exif = legacy_getexif() if callable(legacy_getexif) else None
             if not exif:
                 return None
+            get_ifd = getattr(exif, "get_ifd", None)
+            exif_ifd = get_ifd(ExifTags.IFD.Exif) if callable(get_ifd) else {}
             for tag in _EXIF_DATETIME_TAGS:
-                raw_value = exif.get(tag)
+                raw_value = exif_ifd.get(tag)
+                if raw_value is None:
+                    raw_value = exif.get(tag)
                 if isinstance(raw_value, bytes):
                     raw_value = raw_value.decode("ascii", errors="ignore")
                 if isinstance(raw_value, str):
@@ -115,9 +119,9 @@ def _apply_timezone(value: datetime, timezone: ZoneInfo | None) -> datetime:
     return value.replace(tzinfo=None)
 
 
-def _filesystem_timestamp(path: Path) -> datetime:
+def _filesystem_timestamp(path: Path, timezone: ZoneInfo | None) -> datetime:
     """Return *path*'s filesystem modification time."""
-    return datetime.fromtimestamp(path.stat().st_mtime)
+    return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone)
 
 
 def extract_timestamp(
@@ -139,7 +143,7 @@ def extract_timestamp(
             origin = "mediainfo" if value is not None else "none"
 
     if value is None and mode != "exif":
-        value = _filesystem_timestamp(path)
+        value = _filesystem_timestamp(path, timezone)
         origin = "filesystem"
 
     if value is None:

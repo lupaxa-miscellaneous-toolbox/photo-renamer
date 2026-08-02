@@ -1,8 +1,13 @@
+import os
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 from zoneinfo import ZoneInfo
+
+import pytest
+from PIL import ExifTags
 
 from lupaxa.photo_renamer.metadata import (
     _read_image_exif_datetime,
@@ -29,6 +34,26 @@ def test_image_exif_prefers_original_datetime(tmp_path: Path) -> None:
     with patch("lupaxa.photo_renamer.metadata.Image.open", return_value=image):
         result = _read_image_exif_datetime(path)
 
+    assert result == datetime(2026, 3, 3, 3, 3, 3)
+
+
+def test_image_exif_prefers_original_datetime_from_exif_ifd(tmp_path: Path) -> None:
+    path = tmp_path / "nested.jpg"
+    exif = MagicMock()
+    exif.__bool__.return_value = True
+    exif.get.side_effect = lambda tag: {306: "2024:01:01 01:01:01"}.get(tag)
+    exif.get_ifd.return_value = {
+        36867: "2026:03:03 03:03:03",
+        36868: "2025:02:02 02:02:02",
+    }
+    image = MagicMock()
+    image.getexif.return_value = exif
+    image.__enter__.return_value = image
+
+    with patch("lupaxa.photo_renamer.metadata.Image.open", return_value=image):
+        result = _read_image_exif_datetime(path)
+
+    exif.get_ifd.assert_called_once_with(ExifTags.IFD.Exif)
     assert result == datetime(2026, 3, 3, 3, 3, 3)
 
 
@@ -62,6 +87,28 @@ def test_filesystem_mode_uses_mtime(tmp_path: Path) -> None:
     assert result.missing is False
     assert result.origin == "filesystem"
     assert result.value is not None
+
+
+def test_filesystem_mtime_converts_from_local_to_target_timezone(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    path = tmp_path / "a.jpg"
+    path.write_bytes(b"x")
+    timestamp = datetime(2026, 1, 15, 12, 0, tzinfo=UTC).timestamp()
+    os.utime(path, (timestamp, timestamp))
+
+    with monkeypatch.context() as context:
+        context.setenv("TZ", "America/Los_Angeles")
+        time.tzset()
+        result = extract_timestamp(
+            path,
+            mode="filesystem",
+            timezone=ZoneInfo("Europe/Berlin"),
+        )
+    time.tzset()
+
+    assert result.value == datetime(2026, 1, 15, 13, 0)
 
 
 def test_exif_mode_missing_without_fallback(tmp_path: Path) -> None:
