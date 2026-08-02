@@ -1,0 +1,31 @@
+site_name: lupaxa-photo-renamer
+site_description: Safely rename photographs and videos using capture timestamps
+site_url: https://lupaxa-code-playground.github.io/photo-renamer/
+repo_url: https://github.com/lupaxa-code-playground/photo-renamer
+repo_name: lupaxa-code-playground/photo-renamer
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Command reference: command-reference.md
+  - Examples: examples.md
+  - Metadata: metadata.md
+  - Source detection: source-detection.md
+  - Organising media: organising.md
+  - Troubleshooting and FAQ: troubleshooting.md
+  - Development: development.md
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+
+strict: true
