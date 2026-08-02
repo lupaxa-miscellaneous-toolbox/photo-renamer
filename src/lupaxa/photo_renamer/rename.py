@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import re
+import shutil
 from datetime import datetime
 from pathlib import Path
 
-from lupaxa.photo_renamer.models import NameFormat
+from lupaxa.photo_renamer.models import NameFormat, RenamePlan
 from lupaxa.photo_renamer.utils import normalize_extension
 
 ALREADY_NAMED_RE = re.compile(
@@ -47,3 +48,18 @@ def build_filename(
 def is_already_named(filename: str) -> bool:
     """Return whether *filename* already matches a date-based rename pattern."""
     return bool(ALREADY_NAMED_RE.match(Path(filename).stem))
+
+
+def apply_plan(plan: RenamePlan, *, dry_run: bool) -> None:
+    """Apply one copy or move plan without overwriting an existing file."""
+    if dry_run or plan.action == "skip":
+        return
+    if plan.destination.exists():
+        msg = f"destination already exists: {plan.destination}"
+        raise FileExistsError(msg)
+
+    plan.destination.parent.mkdir(parents=True, exist_ok=True)
+    if plan.action == "copy":
+        shutil.copy2(plan.source, plan.destination)
+    else:
+        shutil.move(plan.source, plan.destination)

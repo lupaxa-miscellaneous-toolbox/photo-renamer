@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import sys
 
+from rich.console import Console
+
 from lupaxa.photo_renamer.config import AppConfig, parse_args
 from lupaxa.photo_renamer.exceptions import ConfigError
+from lupaxa.photo_renamer.pipeline import run
 
 
 def parse_arguments(argv: list[str] | None = None) -> AppConfig:
@@ -14,13 +17,14 @@ def parse_arguments(argv: list[str] | None = None) -> AppConfig:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Parse CLI arguments; pipeline execution is wired in a later task."""
+    """Run the rename pipeline and map its outcome to a process exit code."""
     try:
-        parse_arguments(argv)
+        config = parse_arguments(argv)
     except ConfigError as exc:
         print(exc, file=sys.stderr)
         return 2
-    return 0
+    stats = run(config, console=Console(quiet=config.quiet))
+    return 1 if stats.failed else 0
 
 
 if __name__ == "__main__":
