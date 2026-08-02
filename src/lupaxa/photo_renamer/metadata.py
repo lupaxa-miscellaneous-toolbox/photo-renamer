@@ -42,7 +42,8 @@ def _read_image_exif_datetime(path: Path) -> datetime | None:
     """Return the highest-priority EXIF timestamp from *path*, if available."""
     try:
         with Image.open(path) as image:
-            exif = image.getexif()
+            # May be Pillow Exif or a legacy dict from Image._getexif().
+            exif: Any | None = image.getexif()
             if not exif:
                 legacy_getexif = getattr(image, "_getexif", None)
                 exif = legacy_getexif() if callable(legacy_getexif) else None
