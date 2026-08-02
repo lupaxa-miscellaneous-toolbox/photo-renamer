@@ -11,7 +11,7 @@ from lupaxa.photo_renamer.utils import normalize_extension
 
 ALREADY_NAMED_RE = re.compile(
     r"^(?:"
-    r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:_\d{3})?(?:_[A-Za-z][A-Za-z0-9]*)?"
+    r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:_\d{3})?(?:_[A-Za-z][A-Za-z0-9]*(?:_\d{3})?)?"
     r"|"
     r"[A-Za-z][A-Za-z0-9]*_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:_\d{3})?"
     r")$"

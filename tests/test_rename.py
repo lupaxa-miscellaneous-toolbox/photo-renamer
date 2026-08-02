@@ -17,5 +17,8 @@ def test_is_already_named() -> None:
     assert is_already_named("2026-08-01_14-55-22.jpg") is True
     assert is_already_named("2026-08-01_14-55-22_001.jpg") is True
     assert is_already_named("2026-08-01_14-55-22_WhatsApp.jpg") is True
+    assert is_already_named("2026-08-01_14-55-22_001_WhatsApp.jpg") is True
+    assert is_already_named("2026-08-01_14-55-22_WhatsApp_001.jpg") is True
     assert is_already_named("WhatsApp_2026-08-01_14-55-22.jpg") is True
+    assert is_already_named("WhatsApp_2026-08-01_14-55-22_001.jpg") is True
     assert is_already_named("IMG-20260801-WA0001.jpg") is False
