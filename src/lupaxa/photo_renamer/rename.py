@@ -19,6 +19,7 @@ ALREADY_NAMED_RE = re.compile(
     r"[A-Za-z][A-Za-z0-9]*_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}(?:_\d{3})?"
     r")$"
 )
+_LINK_FALLBACK_ERRNOS = {errno.EXDEV, errno.EPERM, errno.EOPNOTSUPP, errno.ENOSYS}
 
 
 def format_timestamp(dt: datetime) -> str:
@@ -57,7 +58,7 @@ def _move_exclusive(source: Path, destination: Path) -> None:
     try:
         os.link(source, destination)
     except OSError as exc:
-        if exc.errno != errno.EXDEV:
+        if exc.errno not in _LINK_FALLBACK_ERRNOS:
             raise
         with destination.open("xb") as out_f, source.open("rb") as in_f:
             shutil.copyfileobj(in_f, out_f)

@@ -14,6 +14,7 @@ from lupaxa.photo_renamer.config import AppConfig
 from lupaxa.photo_renamer.models import MediaFile, RenamePlan, TimestampResult
 from lupaxa.photo_renamer.pipeline import plan_file, run
 from lupaxa.photo_renamer.rename import apply_plan
+from lupaxa.photo_renamer.scanner import ScanError
 
 
 def _cfg(root: Path, **kwargs: object) -> AppConfig:
@@ -126,7 +127,7 @@ def test_collision_is_counted_and_never_overwritten(tmp_path: Path) -> None:
     assert (output / "2026-08-01_13-45-22_001.jpg").read_bytes() == b"new"
 
 
-@pytest.mark.parametrize("action", [("copy",), ("move",)])
+@pytest.mark.parametrize("action", ["copy", "move"])
 def test_apply_plan_refuses_dangling_symlink_destination(tmp_path: Path, action: str) -> None:
     source = tmp_path / "photo.jpg"
     source.write_bytes(b"new")
@@ -199,6 +200,24 @@ def test_operation_failure_is_counted_and_logged(tmp_path: Path) -> None:
     log = log_file.read_text(encoding="utf-8")
     assert "\tfailed\t" in log
     assert "disk full" in log
+
+
+def test_scan_error_is_counted_as_failure(tmp_path: Path) -> None:
+    unreadable = tmp_path / "unreadable"
+
+    def scan_with_error(
+        *args: object,
+        errors: list[ScanError],
+        **kwargs: object,
+    ) -> list[MediaFile]:
+        errors.append(ScanError(path=unreadable, message="permission denied"))
+        return []
+
+    with patch("lupaxa.photo_renamer.pipeline.scan_media", side_effect=scan_with_error):
+        stats = run(_cfg(tmp_path, recursive=True))
+
+    assert stats.failed == 1
+    assert stats.scanned == 0
 
 
 def test_dry_run_does_not_create_log_file(tmp_path: Path) -> None:

@@ -16,7 +16,7 @@ from lupaxa.photo_renamer.organiser import resolve_destination_dir
 from lupaxa.photo_renamer.progress import make_progress
 from lupaxa.photo_renamer.rename import apply_plan, build_filename, is_already_named
 from lupaxa.photo_renamer.reporting import LogWriter, print_startup, print_summary
-from lupaxa.photo_renamer.scanner import scan_media
+from lupaxa.photo_renamer.scanner import ScanError, scan_media
 from lupaxa.photo_renamer.source_detection import detect_source
 
 _MISSING_METADATA = "metadata missing"
@@ -134,16 +134,21 @@ def _log_context(config: AppConfig) -> AbstractContextManager[LogWriter | None]:
 def run(config: AppConfig, console: Console | None = None) -> RunStats:
     """Scan, plan, and execute a configured photo rename run."""
     console = console or Console(quiet=config.quiet)
+    scan_errors: list[ScanError] = []
     media_files = scan_media(
         config.root,
         recursive=config.recursive,
         output_dir=config.output_dir,
         include=config.include,
         exclude=config.exclude,
+        errors=scan_errors,
     )
-    stats = RunStats(scanned=len(media_files))
+    stats = RunStats(scanned=len(media_files), failed=len(scan_errors))
     reserved: set[Path] = set()
     print_startup(console, config, len(media_files))
+    if config.verbose and not config.quiet:
+        for scan_error in scan_errors:
+            console.print(f"[red]failed[/red] {scan_error.path}: {scan_error.message}")
 
     with (
         _log_context(config) as writer,

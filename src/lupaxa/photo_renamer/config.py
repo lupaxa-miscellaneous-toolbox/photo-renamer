@@ -8,8 +8,10 @@ from pathlib import Path
 from typing import Never, cast
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from lupaxa.photo_renamer.constants import DEFAULT_EXTENSIONS
 from lupaxa.photo_renamer.exceptions import ConfigError
 from lupaxa.photo_renamer.models import NameFormat, TimestampMode
+from lupaxa.photo_renamer.utils import normalize_extension
 
 
 @dataclass(frozen=True)
@@ -45,7 +47,7 @@ class _ArgumentParser(argparse.ArgumentParser):
 def _extension_set(value: str | None) -> set[str] | None:
     if value is None:
         return None
-    return {item.strip() for item in value.split(",") if item.strip()}
+    return {normalize_extension(item.strip()) for item in value.split(",") if item.strip()}
 
 
 def _timezone(value: str | None) -> ZoneInfo | None:
@@ -53,7 +55,7 @@ def _timezone(value: str | None) -> ZoneInfo | None:
         return None
     try:
         return ZoneInfo(value)
-    except ZoneInfoNotFoundError as exc:
+    except (ValueError, ZoneInfoNotFoundError) as exc:
         raise ConfigError(f"unknown timezone: {value}") from exc
 
 
@@ -84,9 +86,19 @@ def parse_args(argv: list[str] | None = None) -> AppConfig:
         raise ConfigError("--quiet and --verbose cannot be used together")
 
     root = cast(Path, args.path).resolve()
+    if not root.is_dir():
+        raise ConfigError(f"path is not an existing directory: {root}")
+
     output = cast(Path, args.output)
     output_dir = (root / output if not output.is_absolute() else output).resolve()
     selected_format = args.format or ("source" if args.preserve_source else "datetime")
+    include = _extension_set(args.include)
+    if include is not None:
+        unsupported = include - DEFAULT_EXTENSIONS
+        if unsupported:
+            joined = ", ".join(sorted(unsupported))
+            label = "extension" if len(unsupported) == 1 else "extensions"
+            raise ConfigError(f"unsupported --include {label}: {joined}")
 
     return AppConfig(
         root=root,
@@ -102,7 +114,7 @@ def parse_args(argv: list[str] | None = None) -> AppConfig:
         organise=bool(args.organise),
         flatten=bool(args.flatten),
         move=bool(args.move),
-        include=_extension_set(args.include),
+        include=include,
         exclude=_extension_set(args.exclude),
         timezone=_timezone(args.timezone),
         log_file=cast(Path | None, args.log_file),
