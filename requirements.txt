@@ -1,0 +1,5 @@
+rich>=13.0
+Pillow>=10.0
+pillow-heif>=0.16
+platformdirs>=4.0
+pymediainfo>=6.0

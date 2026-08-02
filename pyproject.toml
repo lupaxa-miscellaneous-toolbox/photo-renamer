@@ -1,0 +1,106 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lupaxa-photo-renamer"
+version = "0.1.0"
+description = "Rename photographs and videos into consistent date-based filenames."
+readme = "README-PYPI.md"
+license = { file = "LICENCE" }
+requires-python = ">=3.13"
+
+authors = [
+  { name = "The Lupaxa Project" }
+]
+
+keywords = ["photos", "rename", "exif", "cli", "media"]
+
+dependencies = [
+  "rich>=13.0",
+  "Pillow>=10.0",
+  "pillow-heif>=0.16",
+  "platformdirs>=4.0",
+  "pymediainfo>=6.0",
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Multimedia :: Graphics",
+  "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/lupaxa-code-playground/photo-renamer"
+Repository = "https://github.com/lupaxa-code-playground/photo-renamer"
+Issues = "https://github.com/lupaxa-code-playground/photo-renamer/issues"
+
+[project.scripts]
+photo-renamer = "lupaxa.photo_renamer.cli:main"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.6.0",
+  "mypy>=1.12.0",
+  "bump-my-version>=1.2.0",
+  "pip-audit>=2.7.0",
+  "mkdocs>=1.6.0",
+  "mkdocs-material>=9.0",
+]
+test = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+]
+
+[tool.hatch.version]
+path = "src/lupaxa/photo_renamer/version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lupaxa"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "S", "UP", "SIM", "C4", "ISC", "D", "ANN", "PT"]
+ignore = [
+  "D200", "D201", "D202", "D203", "D204", "D205", "D206", "D207", "D208", "D209", "D210", "D211", "D212",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "D", "ANN001", "ANN201"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.13"
+warn_unused_configs = true
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+follow_imports = "normal"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "-ra -q --disable-warnings --cov=lupaxa.photo_renamer --cov-report=term-missing"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.coverage.run]
+source = ["lupaxa.photo_renamer"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
