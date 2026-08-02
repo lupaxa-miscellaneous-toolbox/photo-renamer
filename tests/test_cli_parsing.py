@@ -61,3 +61,26 @@ def test_timezone_value_error_is_config_error(tmp_path: Path) -> None:
         pytest.raises(ConfigError, match="unknown timezone"),
     ):
         parse_args([str(tmp_path), "--timezone", "Bad/Zone"])
+
+
+def test_workers_default_is_one(tmp_path: Path) -> None:
+    cfg = parse_args([str(tmp_path)])
+    assert cfg.workers == 1
+    assert cfg.assume_yes is False
+
+
+def test_workers_and_yes_flags(tmp_path: Path) -> None:
+    cfg = parse_args([str(tmp_path), "--workers", "4", "--yes"])
+    assert cfg.workers == 4
+    assert cfg.assume_yes is True
+
+
+def test_yes_short_flag(tmp_path: Path) -> None:
+    cfg = parse_args([str(tmp_path), "-y"])
+    assert cfg.assume_yes is True
+
+
+@pytest.mark.parametrize("value", ["0", "-1"])
+def test_workers_rejects_non_positive(tmp_path: Path, value: str) -> None:
+    with pytest.raises(ConfigError, match="workers"):
+        parse_args([str(tmp_path), "--workers", value])

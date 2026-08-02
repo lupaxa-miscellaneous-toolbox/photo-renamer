@@ -36,6 +36,8 @@ def _cfg(root: Path, **kwargs: object) -> AppConfig:
         "exclude": None,
         "timezone": None,
         "log_file": None,
+        "workers": 1,
+        "assume_yes": False,
     }
     base.update(kwargs)
     return AppConfig(**base)  # type: ignore[arg-type]

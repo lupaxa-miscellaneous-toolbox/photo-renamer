@@ -34,6 +34,8 @@ class AppConfig:
     exclude: set[str] | None
     timezone: ZoneInfo | None
     log_file: Path | None
+    workers: int
+    assume_yes: bool
 
 
 class _ArgumentParser(argparse.ArgumentParser):
@@ -79,10 +81,15 @@ def parse_args(argv: list[str] | None = None) -> AppConfig:
     parser.add_argument("--exclude")
     parser.add_argument("--timezone")
     parser.add_argument("--log-file", type=Path)
+    parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--yes", "-y", action="store_true")
     args = parser.parse_args(argv)
 
     if args.quiet and args.verbose:
         raise ConfigError("--quiet and --verbose cannot be used together")
+
+    if args.workers < 1:
+        raise ConfigError("--workers must be an integer >= 1")
 
     root = cast(Path, args.path).resolve()
     if not root.is_dir():
@@ -117,4 +124,6 @@ def parse_args(argv: list[str] | None = None) -> AppConfig:
         exclude=_extension_set(args.exclude),
         timezone=_timezone(args.timezone),
         log_file=cast(Path | None, args.log_file),
+        workers=int(args.workers),
+        assume_yes=bool(args.yes),
     )
