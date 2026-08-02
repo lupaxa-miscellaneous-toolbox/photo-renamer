@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 from lupaxa.photo_renamer.models import NameFormat, RenamePlan
-from lupaxa.photo_renamer.utils import normalize_extension
+from lupaxa.photo_renamer.utils import normalize_extension, path_is_taken
 
 ALREADY_NAMED_RE = re.compile(
     r"^(?:"
@@ -54,12 +54,14 @@ def apply_plan(plan: RenamePlan, *, dry_run: bool) -> None:
     """Apply one copy or move plan without overwriting an existing file."""
     if dry_run or plan.action == "skip":
         return
-    if plan.destination.exists():
+    if path_is_taken(plan.destination):
         msg = f"destination already exists: {plan.destination}"
         raise FileExistsError(msg)
 
     plan.destination.parent.mkdir(parents=True, exist_ok=True)
     if plan.action == "copy":
-        shutil.copy2(plan.source, plan.destination)
+        with plan.source.open("rb") as source, plan.destination.open("xb") as destination:
+            shutil.copyfileobj(source, destination)
+        shutil.copystat(plan.source, plan.destination)
     else:
         shutil.move(plan.source, plan.destination)

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from lupaxa.photo_renamer.utils import path_is_taken
+
 
 def ensure_unique(
     destination: Path,
@@ -14,7 +16,7 @@ def ensure_unique(
     reserved = reserved or set()
 
     def taken(path: Path) -> bool:
-        return path.exists() or path.resolve() in reserved
+        return path_is_taken(path) or path.resolve() in reserved
 
     if not taken(destination):
         return destination, False

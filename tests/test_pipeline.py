@@ -6,11 +6,13 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
 from rich.console import Console
 
 from lupaxa.photo_renamer.config import AppConfig
-from lupaxa.photo_renamer.models import MediaFile, TimestampResult
+from lupaxa.photo_renamer.models import MediaFile, RenamePlan, TimestampResult
 from lupaxa.photo_renamer.pipeline import plan_file, run
+from lupaxa.photo_renamer.rename import apply_plan
 
 
 def _cfg(root: Path, **kwargs: object) -> AppConfig:
@@ -121,6 +123,29 @@ def test_collision_is_counted_and_never_overwritten(tmp_path: Path) -> None:
     assert stats.collisions == 1
     assert existing.read_bytes() == b"old"
     assert (output / "2026-08-01_13-45-22_001.jpg").read_bytes() == b"new"
+
+
+def test_apply_plan_refuses_dangling_symlink_destination(tmp_path: Path) -> None:
+    source = tmp_path / "photo.jpg"
+    source.write_bytes(b"new")
+    destination = tmp_path / "renamed.jpg"
+    missing_target = tmp_path / "missing.jpg"
+    destination.symlink_to(missing_target)
+    plan = RenamePlan(
+        source=source,
+        destination=destination,
+        detected_source="Camera",
+        timestamp=_timestamp(),
+        action="copy",
+        skipped_reason=None,
+    )
+
+    with pytest.raises(FileExistsError):
+        apply_plan(plan, dry_run=False)
+
+    assert destination.is_symlink()
+    assert destination.readlink() == missing_target
+    assert not missing_target.exists()
 
 
 def test_operation_failure_is_counted_and_logged(tmp_path: Path) -> None:

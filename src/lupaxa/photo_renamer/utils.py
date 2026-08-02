@@ -9,6 +9,11 @@ import platformdirs
 from lupaxa.photo_renamer.constants import DEFAULT_EXTENSIONS
 
 
+def path_is_taken(path: Path) -> bool:
+    """Return whether *path* names an existing entry, including dangling symlinks."""
+    return path.exists() or path.is_symlink()
+
+
 def normalize_extension(ext: str) -> str:
     """Return a lowercase extension without a leading dot."""
     return ext.lower().lstrip(".")

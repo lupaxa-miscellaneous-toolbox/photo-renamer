@@ -21,6 +21,16 @@ def test_ensure_unique_suffixes(tmp_path: Path) -> None:
     assert path2 == tmp_path / "2026-08-01_14-55-22_002.jpg"
 
 
+def test_ensure_unique_suffixes_dangling_symlink(tmp_path: Path) -> None:
+    destination = tmp_path / "2026-08-01_14-55-22.jpg"
+    destination.symlink_to(tmp_path / "missing.jpg")
+
+    path, collided = ensure_unique(destination)
+
+    assert path == tmp_path / "2026-08-01_14-55-22_001.jpg"
+    assert collided is True
+
+
 def test_ensure_unique_respects_reserved(tmp_path: Path) -> None:
     dest = tmp_path / "2026-08-01_14-55-22.jpg"
     reserved = {dest.resolve()}
