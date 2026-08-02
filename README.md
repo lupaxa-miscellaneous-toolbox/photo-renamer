@@ -1,8 +1,10 @@
 <p align="center">
-  <img src="brand/readme-logo.png" alt="Photo Renamer" width="720" />
+    <a href="https://github.com/code-playground">
+        <img src="https://raw.githubusercontent.com/the-lupaxa-project/brand-assets/master/logos/organisations/code-playground/readme-logo.png" alt="Organisation Logo" />
+    </a>
 </p>
 
-# lupaxa-photo-renamer
+<h1 align="center">Photo Renamer</h1>
 
 `lupaxa-photo-renamer` safely copies or moves photographs and videos into
 consistent, date-based filenames. It reads image EXIF or video metadata when
