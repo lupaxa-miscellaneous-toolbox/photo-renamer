@@ -96,8 +96,7 @@ class LogWriter:
         timestamp = datetime.now(tz=UTC).isoformat(timespec="seconds")
         dest_value = str(destination) if destination is not None else "-"
         line = (
-            f"{timestamp}\t{action}\t{source}\t{dest_value}\t"
-            f"{source_label}\t{origin}\t{message}\n"
+            f"{timestamp}\t{action}\t{source}\t{dest_value}\t{source_label}\t{origin}\t{message}\n"
         )
         self._file.write(line)
         self._file.flush()

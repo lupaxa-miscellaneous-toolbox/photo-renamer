@@ -1,6 +1,7 @@
 .worktrees/
 .makefiles/
 .superpowers/
+cursor-docs/
 
 __pycache__/
 *.py[cod]
