@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 import shutil
 from datetime import datetime
@@ -50,6 +51,27 @@ def is_already_named(filename: str) -> bool:
     return bool(ALREADY_NAMED_RE.match(Path(filename).stem))
 
 
+def _move_exclusive(source: Path, destination: Path) -> None:
+    """Move *source* after exclusively claiming *destination*."""
+    descriptor = os.open(destination, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    try:
+        placeholder = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+
+    try:
+        os.replace(source, destination)
+    except OSError:
+        try:
+            current = os.lstat(destination)
+        except FileNotFoundError:
+            pass
+        else:
+            if (current.st_dev, current.st_ino) == (placeholder.st_dev, placeholder.st_ino):
+                destination.unlink()
+        raise
+
+
 def apply_plan(plan: RenamePlan, *, dry_run: bool) -> None:
     """Apply one copy or move plan without overwriting an existing file."""
     if dry_run or plan.action == "skip":
@@ -64,4 +86,4 @@ def apply_plan(plan: RenamePlan, *, dry_run: bool) -> None:
             shutil.copyfileobj(source, destination)
         shutil.copystat(plan.source, plan.destination)
     else:
-        shutil.move(plan.source, plan.destination)
+        _move_exclusive(plan.source, plan.destination)

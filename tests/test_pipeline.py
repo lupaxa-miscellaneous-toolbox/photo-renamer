@@ -148,6 +148,36 @@ def test_apply_plan_refuses_dangling_symlink_destination(tmp_path: Path) -> None
     assert not missing_target.exists()
 
 
+def test_apply_plan_move_refuses_destination_created_after_precheck(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "photo.jpg"
+    source.write_bytes(b"source")
+    destination = tmp_path / "renamed" / "photo.jpg"
+    plan = RenamePlan(
+        source=source,
+        destination=destination,
+        detected_source="Camera",
+        timestamp=_timestamp(),
+        action="move",
+        skipped_reason=None,
+    )
+    original_mkdir = Path.mkdir
+
+    def mkdir_and_create_destination(path: Path, *args: object, **kwargs: object) -> None:
+        original_mkdir(path, *args, **kwargs)  # type: ignore[arg-type]
+        destination.write_bytes(b"racer")
+
+    monkeypatch.setattr(Path, "mkdir", mkdir_and_create_destination)
+
+    with pytest.raises(FileExistsError):
+        apply_plan(plan, dry_run=False)
+
+    assert source.read_bytes() == b"source"
+    assert destination.read_bytes() == b"racer"
+
+
 def test_operation_failure_is_counted_and_logged(tmp_path: Path) -> None:
     src = tmp_path / "photo.jpg"
     src.write_bytes(b"abc")
