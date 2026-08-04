@@ -9,10 +9,10 @@ site_description: >-
 
 site_author: The Lupaxa Project
 
-site_url: https://lupaxa-code-playground.github.io/photo-renamer/
+site_url: https://lupaxa-miscellaneous-toolbox.github.io/photo-renamer/
 
-repo_name: lupaxa-code-playground/photo-renamer
-repo_url: https://github.com/lupaxa-code-playground/photo-renamer
+repo_name: lupaxa-miscellaneous-toolbox/photo-renamer
+repo_url: https://github.com/lupaxa-miscellaneous-toolbox/photo-renamer
 
 extra:
   generator: false

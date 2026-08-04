@@ -1,6 +1,6 @@
 <p align="center">
-    <a href="https://github.com/code-playground">
-        <img src="https://raw.githubusercontent.com/the-lupaxa-project/brand-assets/master/logos/organisations/code-playground/readme-logo.png" alt="Organisation Logo" />
+    <a href="https://github.com/lupaxa-miscellaneous-toolbox">
+        <img src="https://raw.githubusercontent.com/the-lupaxa-project/brand-assets/master/logos/organisations/miscellaneous-toolbox/readme-logo.png" alt="Organisation Logo" />
     </a>
 </p>
 
@@ -27,7 +27,7 @@ pip install lupaxa-photo-renamer
 For local development:
 
 ```bash
-git clone https://github.com/lupaxa-code-playground/photo-renamer.git
+git clone https://github.com/lupaxa-miscellaneous-toolbox/photo-renamer.git
 cd photo-renamer
 python -m venv .venv
 source .venv/bin/activate

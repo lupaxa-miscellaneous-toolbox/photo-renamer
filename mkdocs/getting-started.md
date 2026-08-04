@@ -25,7 +25,7 @@ On Windows, activate with `.venv\Scripts\activate`.
 ## Install from a checkout
 
 ```bash
-git clone https://github.com/lupaxa-code-playground/photo-renamer.git
+git clone https://github.com/lupaxa-miscellaneous-toolbox/photo-renamer.git
 cd photo-renamer
 python -m venv .venv
 source .venv/bin/activate

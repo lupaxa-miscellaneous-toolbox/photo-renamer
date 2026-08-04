@@ -35,9 +35,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/lupaxa-code-playground/photo-renamer"
-Repository = "https://github.com/lupaxa-code-playground/photo-renamer"
-Issues = "https://github.com/lupaxa-code-playground/photo-renamer/issues"
+Homepage = "https://github.com/lupaxa-miscellaneous-toolbox/photo-renamer"
+Repository = "https://github.com/lupaxa-miscellaneous-toolbox/photo-renamer"
+Issues = "https://github.com/lupaxa-miscellaneous-toolbox/photo-renamer/issues"
 
 [project.scripts]
 photo-renamer = "lupaxa.photo_renamer.cli:main"
