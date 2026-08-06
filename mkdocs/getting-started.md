@@ -82,4 +82,4 @@ mkdocs serve
 ```
 
 The project is MIT-licensed; the canonical text is the repository file named
-`LICENCE`.
+`LICENSE`.

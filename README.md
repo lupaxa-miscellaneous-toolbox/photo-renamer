@@ -184,7 +184,7 @@ make mkdocs-build    # strict MkDocs build
 make help
 ```
 
-This project is released under the MIT License; see [`LICENCE`](LICENCE).
+This project is released under the MIT License; see [`LICENSE`](LICENSE).
 
 <a href="https://github.com/the-lupaxa-project">
   <img src="https://raw.githubusercontent.com/the-lupaxa-project/brand-assets/master/logos/components/footer-for-child-orgs.svg" alt="The Lupaxa Project Footer" width="100%" />

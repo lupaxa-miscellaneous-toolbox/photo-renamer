@@ -7,7 +7,7 @@ name = "lupaxa-photo-renamer"
 version = "0.1.0"
 description = "Rename photographs and videos into consistent date-based filenames."
 readme = "README-PYPI.md"
-license = { file = "LICENCE" }
+license = { file = "LICENSE" }
 requires-python = ">=3.13"
 
 authors = [

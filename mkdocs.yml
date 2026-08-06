@@ -9,7 +9,7 @@ site_description: >-
 
 site_author: The Lupaxa Project
 
-site_url: https://lupaxa-miscellaneous-toolbox.github.io/photo-renamer/
+site_url: https://photo-renamer.thelupaxaproject.org/
 
 repo_name: lupaxa-miscellaneous-toolbox/photo-renamer
 repo_url: https://github.com/lupaxa-miscellaneous-toolbox/photo-renamer
@@ -17,7 +17,10 @@ repo_url: https://github.com/lupaxa-miscellaneous-toolbox/photo-renamer
 extra:
   generator: false
   # Hide left site nav (header already lists pages); keep on-this-page TOC.
+  # Default when omitted: false (left nav visible).
   hide_primary_sidebar: false
+  # Optional short label for the header GitHub link.
+  # If omitted, uses the repo segment of repo_name (org/repo → repo).
   repo_display_name: Photo Renamer
   # Footer (rendered by overrides/partials/copyright.html; year set in-browser).
   start_year: 2026
@@ -26,7 +29,7 @@ extra:
     - Where exploration meets precision.
     - Where the untamed meets the engineered.
   # Counter.dev analytics (omit counter_dev_id to disable).
-  # counter_dev_id: <uuid>
+  counter_dev_id: ef410665-76d4-43fe-9e91-53f26ed1004b
   counter_dev_utcoffset: 0
   social_image: assets/images/social-card.png
   social_image_width: 1200

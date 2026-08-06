@@ -2,6 +2,7 @@
 .makefiles/
 .superpowers/
 cursor-docs
+.cursor/
 
 __pycache__/
 *.py[cod]
