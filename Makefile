@@ -1,5 +1,5 @@
 # Lupaxa makefile-skills project wrapper
-# From: the-lupaxa-blueprints/makefile-skills (examples/Makefile.python-docs)
+# From: lupaxa-developers-toolbox/makefile-skills (examples/Makefile.python-docs)
 #
 # First-time setup: make init
 # Day-to-day:       make python-check / make mkdocs-serve
@@ -14,8 +14,8 @@ MAKEFILES_MODE ?= consumer
 # Transport: ssh | https | http
 # Default https so CI and machines without GitHub SSH keys can clone skills.
 MAKEFILES_TRANSPORT ?= https
-MAKEFILES_REPO_SSH  ?= git@github.com:the-lupaxa-blueprints/makefile-skills.git
-MAKEFILES_REPO_HTTP ?= https://github.com/the-lupaxa-blueprints/makefile-skills.git
+MAKEFILES_REPO_SSH  ?= git@github.com:lupaxa-developers-toolbox/makefile-skills.git
+MAKEFILES_REPO_HTTP ?= https://github.com/lupaxa-developers-toolbox/makefile-skills.git
 
 ifeq ($(MAKEFILES_TRANSPORT),ssh)
 MAKEFILES_REPO ?= $(MAKEFILES_REPO_SSH)

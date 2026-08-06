@@ -166,7 +166,7 @@ See the [usage guide](mkdocs/usage.md#troubleshooting) for more detail.
 The full guide is in [`mkdocs/`](mkdocs/index.md), built with the Lupaxa
 technical documentation template (Material theme under `overrides/`).
 
-This repo uses [makefile-skills](https://github.com/the-lupaxa-blueprints/makefile-skills)
+This repo uses [makefile-skills](https://github.com/lupaxa-developers-toolbox/makefile-skills)
 (`python` + `mkdocs`). First-time setup clones skills into `.makefiles/`
 (gitignored):
 
