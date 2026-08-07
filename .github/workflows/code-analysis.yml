@@ -29,7 +29,7 @@ jobs:
     uses: the-lupaxa-project/workflows/.github/workflows/reusable-code-analysis.yml@master
     with:
       languages: "python"
-
+    secrets: inherit
   status-check:
     name: CodeQL Status
     needs:
