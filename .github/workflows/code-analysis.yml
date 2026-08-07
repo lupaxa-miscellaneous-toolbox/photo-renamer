@@ -25,29 +25,27 @@ permissions:
   security-events: write
 
 jobs:
-  codeql:
+  code-analysis:
     uses: the-lupaxa-project/workflows/.github/workflows/reusable-code-analysis.yml@master
     with:
       languages: "python"
     secrets:
       SLACK_CODEQL_WEBHOOK_URL: ${{ secrets.SLACK_CODEQL_WEBHOOK_URL }}
-  status-check:
-    name: CodeQL Status
+
+  generate-workflow-summary:
+    name: Generate Workflow Summary
     needs:
-      - codeql
+      - code-analysis
     if: always()
-    # 🔴 IMPORTANT: this is a *job-level* uses, not under steps:
     uses: the-lupaxa-project/workflows/.github/workflows/reusable-workflow-summary.yml@master
 
-  slack-workflow-status:
-    name: Slack Workflow Status
+  generate-workflow-notifications:
+    name: Generate Workflow Notifications
     needs:
-      - status-check
+      - generate-workflow-summary
     if: always()
-
     uses: the-lupaxa-project/workflows/.github/workflows/reusable-workflow-notifier.yml@master
     with:
       notify_on_results: "failure,timed_out"
-      ignore_jobs: "Check Jobs Status"
     secrets:
       slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
