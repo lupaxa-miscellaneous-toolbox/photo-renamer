@@ -26,6 +26,7 @@ permissions:
 
 jobs:
   code-analysis:
+    name: Code Analysis
     uses: the-lupaxa-project/workflows/.github/workflows/reusable-code-analysis.yml@master
     with:
       languages: "python"
