@@ -1,17 +1,23 @@
-name: Documentation Linter
+name: Markdown Linter
 
 on:
   push:
     paths:
+      - ".github/workflows/markdown-linter.yml"
       - "**/*.md"
-      - "**/*.yml"
-      - "**/*.yaml"
+      - ".markdownlint.yml"
+      - ".markdownlintignore"
+      - ".markdownlint-cli2.jsonc"
 
   pull_request:
+    branches:
+      - "master"
     paths:
+      - ".github/workflows/markdown-linter.yml"
       - "**/*.md"
-      - "**/*.yml"
-      - "**/*.yaml"
+      - ".markdownlint.yml"
+      - ".markdownlintignore"
+      - ".markdownlint-cli2.jsonc"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,27 +28,15 @@ permissions:
   contents: read
 
 jobs:
-  link-checker:
-    name: Link Checker
-    uses: the-lupaxa-project/workflows/.github/workflows/reusable-link-checker.yml@master
-    secrets: inherit
-
   markdown-linter:
     name: Markdown Linter
     uses: the-lupaxa-project/workflows/.github/workflows/reusable-markdown-linter.yml@master
     secrets: inherit
 
-  yaml-linter:
-    name: YAML Linter
-    uses: the-lupaxa-project/workflows/.github/workflows/reusable-yaml-linter.yml@master
-    secrets: inherit
-
   generate-workflow-summary:
     name: Generate Workflow Summary
     needs:
-      - link-checker
       - markdown-linter
-      - yaml-linter
     if: always()
     uses: the-lupaxa-project/workflows/.github/workflows/reusable-workflow-summary.yml@master
 
