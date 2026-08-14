@@ -31,7 +31,7 @@ extra:
   # Counter.dev analytics (omit counter_dev_id to disable).
   counter_dev_id: ef410665-76d4-43fe-9e91-53f26ed1004b
   counter_dev_utcoffset: 0
-  social_image: assets/images/social-card.png
+  social_image: https://raw.githubusercontent.com/the-lupaxa-project/brand-assets/master/logos/social-media/social-card.png
   social_image_width: 1200
   social_image_height: 630
   social_logo: assets/images/logo.png

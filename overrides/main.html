@@ -95,7 +95,7 @@
 
   {% set social_image_url = none %}
   {% if social_image_path %}
-    {% set social_image_url = config.site_url ~ social_image_path %}
+    {% set social_image_url = social_image_path if (social_image_path.startswith("http://") or social_image_path.startswith("https://")) else (config.site_url ~ social_image_path) %}
   {% endif %}
 
   {# -------------------------------------------------------------------------
