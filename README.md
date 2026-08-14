@@ -179,7 +179,7 @@ Common targets:
 
 ```bash
 make python-check    # ruff + mypy + pytest
-make mkdocs-serve    # live docs at http://127.0.0.1:8000
+make mkdocs-serve    # live local docs (port 8000)
 make mkdocs-build    # strict MkDocs build
 make help
 ```
