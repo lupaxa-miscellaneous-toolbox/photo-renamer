@@ -1,9 +1,19 @@
-.worktrees/
-.makefiles/
-.superpowers/
-cursor-docs
-.cursor/
+# OS
 .DS_Store
+
+# Cursor
+.cursor/
+.superpowers/
+.worktrees/
+cursor-docs
+
+# Make
+.makefiles/
+
+# MkDocs
+site/
+
+# Python
 __pycache__/
 *.py[cod]
 .venv/
@@ -16,5 +26,4 @@ build/
 .pytest_cache/
 .coverage
 htmlcov/
-site/
 *.log
