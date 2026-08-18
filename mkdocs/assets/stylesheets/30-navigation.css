@@ -134,19 +134,6 @@
   color: var(--lupaxa-white);
 }
 
-.lupaxa-header__inner > .md-header__option {
-  position: relative;
-  z-index: 3;
-  width: auto;
-  flex: 0 0 auto;
-  margin-left: auto;
-  pointer-events: auto;
-}
-
-.lupaxa-header__inner > .md-header__option .md-header__button {
-  margin: 0;
-}
-
 /* Repository link (top right) */
 
 .lupaxa-header__inner > .md-header__source {
@@ -158,10 +145,6 @@
   margin-left: auto;
   padding-right: 0.25rem;
   pointer-events: auto;
-}
-
-.lupaxa-header__inner > .md-header__option + .md-header__source {
-  margin-left: 0.5rem;
 }
 
 .md-header__source .md-source {

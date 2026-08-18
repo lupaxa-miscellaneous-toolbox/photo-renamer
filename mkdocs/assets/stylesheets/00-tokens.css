@@ -53,29 +53,15 @@
 
 /*
  * MkDocs Material defines palette variables on the active colour scheme.
- * Override them at the same level so both light and dark modes inherit the
- * project branding correctly.
+ * Site is locked to slate; override at the same level so branding wins.
  */
 
-[data-md-color-scheme="default"],
 [data-md-color-scheme="slate"] {
   --md-primary-bg-color: var(--lupaxa-white);
   --md-primary-bg-color--light: rgb(255 255 255 / 70%);
   --md-accent-fg-color: var(--lupaxa-light-blue);
   --md-accent-fg-color--transparent: color-mix(in srgb, var(--lupaxa-light-blue) 10%, transparent);
-}
-
-[data-md-color-scheme="default"] {
-  --md-default-bg-color: var(--lupaxa-white);
-  /* Active nav / links use --md-typeset-a-color → primary */
-  --md-primary-fg-color: var(--lupaxa-dark-blue);
-  --md-primary-fg-color--light: var(--lupaxa-blue);
-  --md-primary-fg-color--dark: var(--lupaxa-dark-blue);
-  --md-typeset-a-color: var(--lupaxa-light-blue);
-}
-
-[data-md-color-scheme="slate"] {
-  /* Dark mode: never use lupaxa-dark-blue for active/link text */
+  /* Never use lupaxa-dark-blue for active/link text */
   --md-primary-fg-color: var(--lupaxa-light-blue);
   --md-primary-fg-color--light: var(--lupaxa-light-blue);
   --md-primary-fg-color--dark: var(--lupaxa-blue);

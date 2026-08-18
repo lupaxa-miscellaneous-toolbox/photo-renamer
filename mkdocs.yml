@@ -23,7 +23,7 @@ extra:
   # If omitted, uses the repo segment of repo_name (org/repo → repo).
   repo_display_name: Photo Renamer
   # Footer (rendered by overrides/partials/copyright.html; year set in-browser).
-  start_year: 2026
+  start_year: 2025
   footer_name: The Lupaxa Project
   footer_taglines:
     - Where exploration meets precision.
@@ -69,20 +69,9 @@ theme:
     - toc.follow
 
   palette:
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: blue
-      accent: light-blue
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: blue
-      accent: blue
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
+    scheme: slate
+    primary: blue
+    accent: light-blue
 
   icon:
     repo: fontawesome/brands/github

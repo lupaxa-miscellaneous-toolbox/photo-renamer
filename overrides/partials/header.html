@@ -1,8 +1,8 @@
 <!--
   Custom single-row header for Lupaxa-style documentation sites.
 
-  Retains Material's native logo, drawer and palette controls while rendering
-  the top-level navigation directly in the header.
+  Retains Material's native logo and drawer while rendering the top-level
+  navigation directly in the header. Theme is locked to slate (no toggle).
 -->
 
 {% set class = "md-header md-header--shadow" %}
@@ -53,18 +53,6 @@
         {% endfor %}
       </ul>
     </nav>
-
-    <!-- Material's native colour-palette toggle -->
-    {% if config.theme.palette %}
-      {% if not config.theme.palette is mapping %}
-        {% include "partials/palette.html" %}
-      {% endif %}
-    {% endif %}
-
-    <!-- Material's native palette preference handling -->
-    {% if not config.theme.palette is mapping %}
-      {% include "partials/javascripts/palette.html" %}
-    {% endif %}
 
     <!-- Repository link -->
     {% if config.repo_url %}

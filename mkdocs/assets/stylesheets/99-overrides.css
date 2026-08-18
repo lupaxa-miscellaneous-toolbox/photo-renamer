@@ -21,7 +21,6 @@
 
 .md-header .lupaxa-header__drawer-button,
 .md-header .md-header__button.md-logo.lupaxa-header__logo,
-.md-header .lupaxa-header__inner > .md-header__option,
 .md-header .lupaxa-header__inner > .md-header__source {
   position: relative;
   z-index: 50;
