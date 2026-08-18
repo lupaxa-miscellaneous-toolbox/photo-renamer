@@ -28,14 +28,14 @@
 }
 
 .md-header .md-header__button.md-logo.lupaxa-header__logo {
-  width: 4.5rem !important;
-  height: 4.5rem !important;
+  width: 4rem !important;
+  height: 4rem !important;
 }
 
 .md-header .md-header__button.md-logo.lupaxa-header__logo img,
 .md-header .md-header__button.md-logo.lupaxa-header__logo svg {
-  width: 4.5rem !important;
-  height: 4.5rem !important;
+  width: 4rem !important;
+  height: 4rem !important;
   max-width: none !important;
   max-height: none !important;
 }

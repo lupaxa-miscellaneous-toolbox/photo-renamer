@@ -28,8 +28,8 @@
 .md-header__button.md-logo.lupaxa-header__logo {
   display: inline-flex;
   flex: 0 0 auto;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 4rem;
+  height: 4rem;
   align-items: center;
   justify-content: center;
   margin: 0 0.75rem 0 -0.25rem;
@@ -40,8 +40,8 @@
 .md-header__button.md-logo.lupaxa-header__logo img,
 .md-header__button.md-logo.lupaxa-header__logo svg {
   display: block;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 4rem;
+  height: 4rem;
   max-width: none;
   max-height: none;
   object-fit: contain;
