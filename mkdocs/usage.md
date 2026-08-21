@@ -65,12 +65,12 @@ Assume this input:
 PATH/vacation/day-1/IMG-20260801-WA0001.jpg
 ```
 
-| Options                 | Destination below output                              |
-| ----------------------- | ----------------------------------------------------- |
-| none                    | `vacation/day-1/2026-08-01_14-55-22.jpg`              |
-| `--organise`            | `vacation/day-1/WhatsApp/2026-08-01_14-55-22.jpg`     |
-| `--flatten`             | `2026-08-01_14-55-22.jpg`                             |
-| `--flatten --organise`  | `WhatsApp/2026-08-01_14-55-22.jpg`                    |
+| Options                | Destination below output                          |
+| :--------------------- | :------------------------------------------------ |
+| none                   | `vacation/day-1/2026-08-01_14-55-22.jpg`          |
+| `--organise`           | `vacation/day-1/WhatsApp/2026-08-01_14-55-22.jpg` |
+| `--flatten`            | `2026-08-01_14-55-22.jpg`                         |
+| `--flatten --organise` | `WhatsApp/2026-08-01_14-55-22.jpg`                |
 
 `--organise` nests the detected source **inside** the preserved relative path.
 

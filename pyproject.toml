@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "lupaxa-photo-renamer"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Rename photographs and videos into consistent date-based filenames."
 readme = "README-PYPI.md"
 license = { file = "LICENSE" }
@@ -60,6 +60,14 @@ test = [
 
 [tool.hatch.version]
 path = "src/lupaxa/photo_renamer/version.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/**",
+  "README.md",
+  "README-PYPI.md",
+  "LICENSE",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/lupaxa"]

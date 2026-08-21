@@ -27,14 +27,16 @@ photo-renamer [options] PATH
 | `--exclude EXT,...` | none          | Exclude listed extensions                                         |
 | `--timezone ZONE`   | unset         | Convert timestamps to an IANA zone before formatting              |
 | `--log-file PATH`   | unset         | Append tab-separated audit events on real runs                    |
+| `--workers N`       | `1`           | Concurrent copy/move workers (planning stays sequential)          |
+| `--yes` / `-y`      | off           | Assume yes for over-cap workers confirmation                      |
 
 ## Exit codes
 
-| Code | Meaning                                                                 |
-| ---- | ----------------------------------------------------------------------- |
-| `0`  | Every scanned file succeeded or was intentionally skipped               |
-| `1`  | At least one file failed (including missing metadata in `exif` mode)    |
-| `2`  | Invalid configuration (unknown timezone, quiet+verbose, bad `PATH`, …)  |
+| Code | Meaning                                                                |
+| :--- | :--------------------------------------------------------------------- |
+| `0`  | Every scanned file succeeded or was intentionally skipped              |
+| `1`  | At least one file failed (including missing metadata in `exif` mode)   |
+| `2`  | Invalid configuration (unknown timezone, quiet+verbose, bad `PATH`, …) |
 
 ## Safety guarantees
 
@@ -45,11 +47,11 @@ run; mistyped `PATH` values raise a configuration error (exit `2`).
 
 ## Filename formats
 
-| Format          | Pattern                              | Example                            |
-| --------------- | ------------------------------------ | ---------------------------------- |
-| `datetime`      | `YYYY-MM-DD_HH-MM-SS.ext`            | `2026-08-01_14-55-22.jpg`          |
-| `source`        | `YYYY-MM-DD_HH-MM-SS_Source.ext`     | `2026-08-01_14-55-22_WhatsApp.jpg` |
-| `source-first`  | `Source_YYYY-MM-DD_HH-MM-SS.ext`     | `WhatsApp_2026-08-01_14-55-22.jpg` |
+| Format         | Pattern                          | Example                            |
+| :------------- | :------------------------------- | :--------------------------------- |
+| `datetime`     | `YYYY-MM-DD_HH-MM-SS.ext`        | `2026-08-01_14-55-22.jpg`          |
+| `source`       | `YYYY-MM-DD_HH-MM-SS_Source.ext` | `2026-08-01_14-55-22_WhatsApp.jpg` |
+| `source-first` | `Source_YYYY-MM-DD_HH-MM-SS.ext` | `WhatsApp_2026-08-01_14-55-22.jpg` |
 
 Extensions are preserved and lowercased.
 
