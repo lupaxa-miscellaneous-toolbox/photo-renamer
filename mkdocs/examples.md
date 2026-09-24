@@ -1,6 +1,6 @@
 # Examples
 
-## Preview, then copy
+## Preview, Then Copy
 
 ```bash
 photo-renamer --dry-run --recursive ~/Pictures
@@ -10,7 +10,7 @@ photo-renamer --recursive ~/Pictures
 The second command copies results to `~/Pictures/renamed/` and leaves originals
 in place.
 
-## Move into an archive
+## Move Into an Archive
 
 ```bash
 photo-renamer --dry-run --recursive --move --output /Volumes/Archive ~/Pictures
@@ -20,7 +20,7 @@ photo-renamer --recursive --move --output /Volumes/Archive ~/Pictures
 Only use the second command after reviewing the preview. Successfully processed
 sources are removed in move mode.
 
-## Include source in names
+## Include Source in Names
 
 ```bash
 photo-renamer --recursive --format source ~/Pictures
@@ -34,7 +34,7 @@ IMG-20260801-WA0001.JPG
 Put the label first with `--format source-first`, or use `--preserve-source` as
 shorthand for `--format source`.
 
-## Organise while preserving directories
+## Organise While Preserving Directories
 
 For `holiday/day-1/IMG-20260801-WA0001.JPG`:
 
@@ -48,7 +48,7 @@ renamed/holiday/day-1/WhatsApp/2026-08-01_14-55-22.jpg
 
 The detected source directory is nested **inside** the preserved relative path.
 
-## Flatten output
+## Flatten Output
 
 ```bash
 photo-renamer --recursive --flatten ~/Pictures
@@ -61,7 +61,7 @@ photo-renamer --recursive --flatten --organise ~/Pictures
 Filename collisions are safely suffixed even when files from many directories
 converge.
 
-## Filter formats and choose timestamps
+## Filter Formats and Choose Timestamps
 
 ```bash
 photo-renamer --recursive --include jpg,jpeg,heic --timestamp filesystem ~/Pictures
@@ -70,7 +70,7 @@ photo-renamer --recursive --include jpg,jpeg,heic --timestamp filesystem ~/Pictu
 This limits processing to the listed supported image types and always uses
 modification time.
 
-## Convert to a target timezone
+## Convert to a Target Timezone
 
 ```bash
 photo-renamer --recursive --timezone Europe/London ~/Pictures
@@ -78,7 +78,7 @@ photo-renamer --recursive --timezone Europe/London ~/Pictures
 
 Use a valid IANA timezone identifier.
 
-## Keep an audit log
+## Keep an Audit Log
 
 ```bash
 photo-renamer --recursive --log-file ./rename-events.tsv ~/Pictures

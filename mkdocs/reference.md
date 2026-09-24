@@ -30,7 +30,7 @@ photo-renamer [options] PATH
 | `--workers N`       | `1`           | Concurrent copy/move workers (planning stays sequential)          |
 | `--yes` / `-y`      | off           | Assume yes for over-cap workers confirmation                      |
 
-## Exit codes
+## Exit Codes
 
 | Code | Meaning                                                                |
 | :--- | :--------------------------------------------------------------------- |
@@ -38,14 +38,14 @@ photo-renamer [options] PATH
 | `1`  | At least one file failed (including missing metadata in `exif` mode)   |
 | `2`  | Invalid configuration (unknown timezone, quiet+verbose, bad `PATH`, …) |
 
-## Safety guarantees
+## Safety Guarantees
 
 Copy is the default. Destinations are claimed exclusively and never overwritten.
 Taken names become `_001`, `_002`, and so on. The resolved output tree is
 excluded from scans. Unreadable subdirectories are skipped without aborting the
 run; mistyped `PATH` values raise a configuration error (exit `2`).
 
-## Filename formats
+## Filename Formats
 
 | Format         | Pattern                          | Example                            |
 | :------------- | :------------------------------- | :--------------------------------- |
@@ -55,23 +55,23 @@ run; mistyped `PATH` values raise a configuration error (exit `2`).
 
 Extensions are preserved and lowercased.
 
-## Metadata and timestamps
+## Metadata and Timestamps
 
 Every output filename uses a resolved timestamp as `YYYY-MM-DD_HH-MM-SS`.
 
-### Image priority
+### Image Priority
 
 1. EXIF `DateTimeOriginal`
 2. EXIF `DateTimeDigitized`
 3. EXIF `DateTime`
 4. Filesystem modification time (when the mode allows fallback)
 
-### Video priority
+### Video Priority
 
 MediaInfo recorded/creation/encoded/tagged dates, then filesystem modification
 time. Install the MediaInfo system package for embedded video timestamps.
 
-### Timestamp modes
+### Timestamp Modes
 
 | Mode          | Behaviour                                                                 |
 | :------------ | :------------------------------------------------------------------------ |
@@ -82,7 +82,7 @@ time. Install the MediaInfo system package for embedded video timestamps.
 `--timezone ZONE` accepts IANA identifiers such as `Europe/London`. The tool
 reads metadata only; it never rewrites EXIF or video tags.
 
-## Source detection
+## Source Detection
 
 Rules are case-insensitive; the first match wins.
 

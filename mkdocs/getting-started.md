@@ -1,4 +1,4 @@
-# Getting started
+# Getting Started
 
 ## Requirements
 
@@ -24,7 +24,7 @@ python -m pip install lupaxa-photo-renamer
 
 On Windows, activate with `.venv\Scripts\activate`.
 
-## Install from a checkout
+## Install from a Checkout
 
 ```bash
 git clone https://github.com/lupaxa-miscellaneous-toolbox/photo-renamer.git
@@ -43,7 +43,7 @@ make init
 make python-install-dev
 ```
 
-## First run
+## First Run
 
 Always preview first:
 
@@ -60,7 +60,7 @@ photo-renamer --recursive ~/Pictures
 
 Results land under `~/Pictures/renamed/` and originals stay in place.
 
-## Supported formats
+## Supported Formats
 
 | Kind   | Extensions                                                  |
 | :----- | :---------------------------------------------------------- |
@@ -70,7 +70,7 @@ Results land under `~/Pictures/renamed/` and originals stay in place.
 Matching is case-insensitive. `--include` and `--exclude` filter this supported
 set; they do not enable arbitrary formats.
 
-## Development checks
+## Development Checks
 
 ```bash
 make python-check    # ruff + mypy + pytest

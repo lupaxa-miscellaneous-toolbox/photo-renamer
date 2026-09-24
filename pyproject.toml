@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "lupaxa-photo-renamer"
 dynamic = ["version"]
 description = "Rename photographs and videos into consistent date-based filenames."
-readme = "README-PYPI.md"
+readme = "README.md"
 license = { file = "LICENCE" }
 requires-python = ">=3.13"
 
@@ -28,8 +28,10 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: Console",
   "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Multimedia :: Graphics",
   "Topic :: Utilities",
 ]
@@ -65,7 +67,6 @@ path = "src/lupaxa/photo_renamer/version.py"
 include = [
   "src/**",
   "README.md",
-  "README-PYPI.md",
   "LICENCE",
 ]
 

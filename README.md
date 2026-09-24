@@ -161,28 +161,36 @@ See the [usage guide](mkdocs/usage.md#troubleshooting) for more detail.
 | What does `--preserve-source` preserve? | The source label in the filename (`--format source`), not originals. |
 | Where do unknown sources go?            | They use the `Unknown` label when naming or organising by source.    |
 
-## Documentation and development
-
-The full guide is in [`mkdocs/`](mkdocs/index.md), built with the Lupaxa
-technical documentation template (Material theme under `overrides/`).
-
-This repo uses [makefile-skills](https://github.com/lupaxa-developers-toolbox/makefile-skills)
-(`python` + `mkdocs`). First-time setup clones skills into `.makefiles/`
-(gitignored):
+## Testing
 
 ```bash
 make init
-make install-dev
+make python-install-dev
+make python-check
 ```
 
-Common targets:
+Or without Make:
 
 ```bash
-make python-check    # ruff + mypy + pytest
-make mkdocs-serve    # live local docs (port 8000)
-make mkdocs-build    # strict MkDocs build
-make help
+python -m pip install -e ".[test]"
+pytest
 ```
+
+Coverage for `lupaxa.photo_renamer` is reported by default.
+
+## Documentation
+
+The published guide is at
+<https://photo-renamer.thelupaxaproject.org/>.
+
+Site Markdown lives in `mkdocs/`.
+
+```bash
+python -m pip install -r requirements.txt
+make mkdocs-serve
+```
+
+`make mkdocs-build` builds the site. A strict build is `python -m mkdocs build --strict`.
 
 This project is released under the MIT License; see [`LICENCE`](LICENCE).
 

@@ -6,7 +6,7 @@ photo-renamer [options] PATH
 
 `PATH` is the directory to scan.
 
-## Recommended workflow
+## Recommended Workflow
 
 ```bash
 photo-renamer --dry-run --recursive ~/Pictures
@@ -15,7 +15,7 @@ photo-renamer --dry-run --recursive ~/Pictures
 Review the startup panel (root, output, operation, format, timestamp mode, file
 count). Remove `--dry-run` only when those values are correct.
 
-## Default behaviour
+## Default Behaviour
 
 ```bash
 photo-renamer ~/Pictures
@@ -36,7 +36,7 @@ Pictures/holiday/day-1/photo.jpg
 Use `--move` to remove successfully processed source files. A failure affects
 only that file, but causes a non-zero process exit code.
 
-## Selecting files
+## Selecting Files
 
 ```bash
 photo-renamer --recursive --include jpg,jpeg,heic ~/Pictures
@@ -57,7 +57,7 @@ explicit `--format` value takes precedence.
 Use `--skip-existing` to skip filenames already matching a generated date-based
 pattern. Adding `--force` processes those files instead.
 
-## Organising media
+## Organising Media
 
 Assume this input:
 
@@ -74,7 +74,7 @@ PATH/vacation/day-1/IMG-20260801-WA0001.jpg
 
 `--organise` nests the detected source **inside** the preserved relative path.
 
-## Output and logging
+## Output and Logging
 
 ```bash
 photo-renamer --output sorted ~/Pictures
@@ -88,7 +88,7 @@ audit events on real runs (not dry runs).
 Use `--verbose` for per-file actions or `--quiet` to suppress Rich output. They
 cannot be used together.
 
-## Parallel workers
+## Parallel Workers
 
 ```bash
 photo-renamer --workers 4 ~/Pictures
@@ -104,19 +104,19 @@ CI).
 
 ## Troubleshooting
 
-### No files are scanned
+### No Files Are Scanned
 
 - Add `--recursive` if media is below nested directories
 - Check `--include` / `--exclude` filters
 - Files inside the resolved output directory are ignored
 - Symlinks are not followed
 
-### Missing metadata
+### Missing Metadata
 
 `--timestamp exif` requires embedded EXIF or MediaInfo dates. Use `auto` for
 filesystem fallback, or `filesystem` to always use modification time.
 
-### Unexpected times
+### Unexpected Times
 
 Inspect origins with `--verbose` and `--log-file`. Pass an IANA zone:
 
@@ -124,7 +124,7 @@ Inspect origins with `--verbose` and `--log-file`. Pass an IANA zone:
 photo-renamer --timezone Europe/London --dry-run PATH
 ```
 
-### A `_001` suffix appears
+### A `_001` Suffix Appears
 
 The destination already existed or was reserved in the same run. Suffixing
 prevents overwrites.
