@@ -20,9 +20,7 @@ Source artwork and derived logos for Photo Renamer.
 
 ## Derived outputs
 
-| File                                      | Size         | Used by                            |
-| ----------------------------------------- | ------------ | ---------------------------------- |
-| `readme-logo.png`                         | 1280×320     | GitHub README header               |
-| `../mkdocs/assets/images/logo.png`        | 400×400 RGBA | MkDocs header logo (transparent)   |
-| `../mkdocs/assets/images/favicon.png`     | 128×128      | MkDocs / browser favicon           |
-| Shared brand-assets social card           | 1200×630     | Open Graph / social preview        |
+| File                            | Size     | Used by                     |
+| :------------------------------ | :------- | :-------------------------- |
+| `readme-logo.png`               | 1280×320 | GitHub README header        |
+| Shared brand-assets social card | 1200×630 | Open Graph / social preview |
