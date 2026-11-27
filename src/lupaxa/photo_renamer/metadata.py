@@ -20,13 +20,7 @@ with suppress(ImportError, OSError):
     register_heif_opener()
 
 _EXIF_DATETIME_TAGS = (36867, 36868, 306)
-_MEDIAINFO_DATETIME_FIELDS = (
-    "recorded_date",
-    "file_creation_date",
-    "file_creation_date__local",
-    "encoded_date",
-    "tagged_date",
-)
+_MEDIAINFO_DATETIME_FIELDS = ("recorded_date", "file_creation_date", "file_creation_date__local", "encoded_date", "tagged_date")
 
 
 def parse_exif_datetime(value: str) -> datetime | None:
@@ -91,10 +85,7 @@ def _read_video_datetime(path: Path) -> datetime | None:
     try:
         media_info = MediaInfo.parse(path)
         tracks: list[Any] = media_info.tracks
-        ordered_tracks = sorted(
-            tracks,
-            key=lambda track: getattr(track, "track_type", None) != "General",
-        )
+        ordered_tracks = sorted(tracks, key=lambda track: getattr(track, "track_type", None) != "General")
         for track in ordered_tracks:
             for field in _MEDIAINFO_DATETIME_FIELDS:
                 raw_value = getattr(track, field, None)
@@ -120,11 +111,7 @@ def _filesystem_timestamp(path: Path, timezone: ZoneInfo | None) -> datetime:
     return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone)
 
 
-def extract_timestamp(
-    path: Path,
-    mode: TimestampMode,
-    timezone: ZoneInfo | None,
-) -> TimestampResult:
+def extract_timestamp(path: Path, mode: TimestampMode, timezone: ZoneInfo | None) -> TimestampResult:
     """Resolve a timestamp according to media type, mode, and target timezone."""
     value: datetime | None = None
     origin: TimestampOrigin = "none"
@@ -144,8 +131,4 @@ def extract_timestamp(
 
     if value is None:
         return TimestampResult(value=None, origin="none", missing=True)
-    return TimestampResult(
-        value=_apply_timezone(value, timezone),
-        origin=origin,
-        missing=False,
-    )
+    return TimestampResult(value=_apply_timezone(value, timezone), origin=origin, missing=False)

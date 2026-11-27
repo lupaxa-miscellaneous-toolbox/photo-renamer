@@ -27,12 +27,7 @@ def format_timestamp(dt: datetime) -> str:
     return dt.strftime("%Y-%m-%d_%H-%M-%S")
 
 
-def build_filename(
-    dt: datetime,
-    extension: str,
-    name_format: NameFormat,
-    source: str,
-) -> str:
+def build_filename(dt: datetime, extension: str, name_format: NameFormat, source: str) -> str:
     """Build a renamed filename from timestamp, extension, format, and source."""
     stamp = format_timestamp(dt)
     ext = normalize_extension(extension)

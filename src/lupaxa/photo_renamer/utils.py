@@ -21,19 +21,13 @@ def normalize_extension(ext: str) -> str:
     return ext.lower().lstrip(".")
 
 
-def is_supported_extension(
-    ext: str,
-    include: set[str] | None,
-    exclude: set[str] | None,
-) -> bool:
+def is_supported_extension(ext: str, include: set[str] | None, exclude: set[str] | None) -> bool:
     """Return whether *ext* is allowed after applying include/exclude filters."""
     normalized = normalize_extension(ext)
     allowed = set(DEFAULT_EXTENSIONS)
     if include is not None:
         allowed &= {normalize_extension(e) for e in include}
-    return normalized in allowed and (
-        exclude is None or normalized not in {normalize_extension(e) for e in exclude}
-    )
+    return normalized in allowed and (exclude is None or normalized not in {normalize_extension(e) for e in exclude})
 
 
 def user_log_dir() -> Path:

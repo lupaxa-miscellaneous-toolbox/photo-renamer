@@ -69,26 +69,13 @@ class LogWriter:
         self._file = self._path.open("a", encoding="utf-8")
         return self
 
-    def __exit__(
-        self: Self,
-        exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: TracebackType | None,
-    ) -> None:
+    def __exit__(self: Self, exc_type: type[BaseException] | None, exc: BaseException | None, tb: TracebackType | None) -> None:
         """Close the log file."""
         if self._file is not None:
             self._file.close()
             self._file = None
 
-    def write_event(
-        self: Self,
-        action: str,
-        source: Path,
-        destination: Path | None,
-        source_label: str,
-        origin: str,
-        message: str = "",
-    ) -> None:
+    def write_event(self: Self, action: str, source: Path, destination: Path | None, source_label: str, origin: str, message: str = "") -> None:
         """Write one tab-separated log line for a rename event."""
         if self._file is None:
             msg = "LogWriter is not open"
@@ -96,8 +83,6 @@ class LogWriter:
 
         timestamp = datetime.now(tz=UTC).isoformat(timespec="seconds")
         dest_value = str(destination) if destination is not None else "-"
-        line = (
-            f"{timestamp}\t{action}\t{source}\t{dest_value}\t{source_label}\t{origin}\t{message}\n"
-        )
+        line = f"{timestamp}\t{action}\t{source}\t{dest_value}\t{source_label}\t{origin}\t{message}\n"
         self._file.write(line)
         self._file.flush()

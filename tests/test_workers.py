@@ -36,10 +36,7 @@ def test_confirm_workers_skips_prompt_with_assume_yes() -> None:
 def test_confirm_workers_accepts_yes_on_tty() -> None:
     stdin = io.StringIO("yes\n")
     stderr = io.StringIO()
-    with (
-        patch("lupaxa.photo_renamer.workers.recommended_max_workers", return_value=2),
-        patch.object(stdin, "isatty", return_value=True),
-    ):
+    with patch("lupaxa.photo_renamer.workers.recommended_max_workers", return_value=2), patch.object(stdin, "isatty", return_value=True):
         confirm_workers(8, assume_yes=False, stdin=stdin, stderr=stderr)
     assert "exceeds recommended max 2" in stderr.getvalue()
 
@@ -47,20 +44,12 @@ def test_confirm_workers_accepts_yes_on_tty() -> None:
 def test_confirm_workers_declines_empty_on_tty() -> None:
     stdin = io.StringIO("\n")
     stderr = io.StringIO()
-    with (
-        patch("lupaxa.photo_renamer.workers.recommended_max_workers", return_value=2),
-        patch.object(stdin, "isatty", return_value=True),
-        pytest.raises(ConfigError, match="cancelled"),
-    ):
+    with patch("lupaxa.photo_renamer.workers.recommended_max_workers", return_value=2), patch.object(stdin, "isatty", return_value=True), pytest.raises(ConfigError, match="cancelled"):
         confirm_workers(8, assume_yes=False, stdin=stdin, stderr=stderr)
 
 
 def test_confirm_workers_non_tty_requires_yes() -> None:
     stdin = io.StringIO("yes\n")
     stderr = io.StringIO()
-    with (
-        patch("lupaxa.photo_renamer.workers.recommended_max_workers", return_value=2),
-        patch.object(stdin, "isatty", return_value=False),
-        pytest.raises(ConfigError, match="--yes"),
-    ):
+    with patch("lupaxa.photo_renamer.workers.recommended_max_workers", return_value=2), patch.object(stdin, "isatty", return_value=False), pytest.raises(ConfigError, match="--yes"):
         confirm_workers(8, assume_yes=False, stdin=stdin, stderr=stderr)

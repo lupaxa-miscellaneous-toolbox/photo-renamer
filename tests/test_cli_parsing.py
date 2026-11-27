@@ -38,10 +38,7 @@ def test_main_maps_config_error_to_exit_two(tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize("path_kind", ["missing", "file"])
-def test_parse_args_rejects_path_that_is_not_directory(
-    tmp_path: Path,
-    path_kind: str,
-) -> None:
+def test_parse_args_rejects_path_that_is_not_directory(tmp_path: Path, path_kind: str) -> None:
     path = tmp_path / path_kind
     if path_kind == "file":
         path.write_bytes(b"x")
@@ -56,10 +53,7 @@ def test_parse_args_rejects_unknown_include_extension(tmp_path: Path) -> None:
 
 
 def test_timezone_value_error_is_config_error(tmp_path: Path) -> None:
-    with (
-        patch("lupaxa.photo_renamer.config.ZoneInfo", side_effect=ValueError("bad key")),
-        pytest.raises(ConfigError, match="unknown timezone"),
-    ):
+    with patch("lupaxa.photo_renamer.config.ZoneInfo", side_effect=ValueError("bad key")), pytest.raises(ConfigError, match="unknown timezone"):
         parse_args([str(tmp_path), "--timezone", "Bad/Zone"])
 
 

@@ -13,9 +13,7 @@ def test_build_filename_formats() -> None:
     dt = datetime(2026, 8, 1, 14, 55, 22)
     assert build_filename(dt, "JPG", "datetime", "WhatsApp") == "2026-08-01_14-55-22.jpg"
     assert build_filename(dt, "jpg", "source", "WhatsApp") == "2026-08-01_14-55-22_WhatsApp.jpg"
-    assert (
-        build_filename(dt, "jpg", "source-first", "WhatsApp") == "WhatsApp_2026-08-01_14-55-22.jpg"
-    )
+    assert build_filename(dt, "jpg", "source-first", "WhatsApp") == "WhatsApp_2026-08-01_14-55-22.jpg"
 
 
 def test_is_already_named() -> None:
@@ -30,11 +28,7 @@ def test_is_already_named() -> None:
 
 
 @pytest.mark.parametrize("error_number", [errno.EPERM, errno.EOPNOTSUPP, errno.ENOSYS])
-def test_move_falls_back_to_exclusive_copy_for_unsupported_link(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-    error_number: int,
-) -> None:
+def test_move_falls_back_to_exclusive_copy_for_unsupported_link(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, error_number: int) -> None:
     source = tmp_path / "source.jpg"
     source.write_bytes(b"photo")
     destination = tmp_path / "destination.jpg"
@@ -42,11 +36,7 @@ def test_move_falls_back_to_exclusive_copy_for_unsupported_link(
         source=source,
         destination=destination,
         detected_source="Camera",
-        timestamp=TimestampResult(
-            value=datetime(2026, 8, 1, 14, 55, 22),
-            origin="filesystem",
-            missing=False,
-        ),
+        timestamp=TimestampResult(value=datetime(2026, 8, 1, 14, 55, 22), origin="filesystem", missing=False),
         action="move",
         skipped_reason=None,
     )

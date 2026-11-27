@@ -30,16 +30,7 @@ def _is_under_output(path: Path, output_dir: Path) -> bool:
     return True
 
 
-def _scan_dir(
-    dir_path: Path,
-    *,
-    output_dir: Path,
-    include: set[str] | None,
-    exclude: set[str] | None,
-    recursive: bool,
-    results: list[MediaFile],
-    errors: list[ScanError],
-) -> None:
+def _scan_dir(dir_path: Path, *, output_dir: Path, include: set[str] | None, exclude: set[str] | None, recursive: bool, results: list[MediaFile], errors: list[ScanError]) -> None:
     if _is_under_output(dir_path, output_dir):
         return
 
@@ -49,51 +40,21 @@ def _scan_dir(
                 entry_path = Path(entry.path)
                 if entry.is_dir(follow_symlinks=False):
                     if recursive and not _is_under_output(entry_path, output_dir):
-                        _scan_dir(
-                            entry_path,
-                            output_dir=output_dir,
-                            include=include,
-                            exclude=exclude,
-                            recursive=recursive,
-                            results=results,
-                            errors=errors,
-                        )
+                        _scan_dir(entry_path, output_dir=output_dir, include=include, exclude=exclude, recursive=recursive, results=results, errors=errors)
                 elif entry.is_file(follow_symlinks=False):
                     if _is_under_output(entry_path, output_dir):
                         continue
                     extension = normalize_extension(entry_path.suffix)
                     if not is_supported_extension(extension, include, exclude):
                         continue
-                    results.append(
-                        MediaFile(
-                            path=entry_path,
-                            extension=extension,
-                            size=entry.stat(follow_symlinks=False).st_size,
-                        )
-                    )
+                    results.append(MediaFile(path=entry_path, extension=extension, size=entry.stat(follow_symlinks=False).st_size))
     except OSError as exc:
         errors.append(ScanError(path=dir_path, message=str(exc)))
 
 
-def scan_media(
-    root: Path,
-    *,
-    recursive: bool,
-    output_dir: Path,
-    include: set[str] | None,
-    exclude: set[str] | None,
-    errors: list[ScanError] | None = None,
-) -> list[MediaFile]:
+def scan_media(root: Path, *, recursive: bool, output_dir: Path, include: set[str] | None, exclude: set[str] | None, errors: list[ScanError] | None = None) -> list[MediaFile]:
     """Collect supported media files under *root*, skipping *output_dir*."""
     results: list[MediaFile] = []
     scan_errors = errors if errors is not None else []
-    _scan_dir(
-        root.resolve(),
-        output_dir=output_dir,
-        include=include,
-        exclude=exclude,
-        recursive=recursive,
-        results=results,
-        errors=scan_errors,
-    )
+    _scan_dir(root.resolve(), output_dir=output_dir, include=include, exclude=exclude, recursive=recursive, results=results, errors=scan_errors)
     return results

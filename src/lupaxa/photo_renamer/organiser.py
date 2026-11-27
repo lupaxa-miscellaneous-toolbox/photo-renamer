@@ -5,15 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 
-def resolve_destination_dir(
-    *,
-    root: Path,
-    output_dir: Path,
-    source_file: Path,
-    detected_source: str,
-    organise: bool,
-    flatten: bool,
-) -> Path:
+def resolve_destination_dir(*, root: Path, output_dir: Path, source_file: Path, detected_source: str, organise: bool, flatten: bool) -> Path:
     """Return the destination directory for a renamed file."""
     root = root.resolve()
     source_file = source_file.resolve()

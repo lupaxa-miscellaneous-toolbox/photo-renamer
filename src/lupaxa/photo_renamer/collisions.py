@@ -7,11 +7,7 @@ from pathlib import Path
 from lupaxa.photo_renamer.utils import path_is_taken
 
 
-def ensure_unique(
-    destination: Path,
-    *,
-    reserved: set[Path] | None = None,
-) -> tuple[Path, bool]:
+def ensure_unique(destination: Path, *, reserved: set[Path] | None = None) -> tuple[Path, bool]:
     """Return a unique path, suffixing with _001, _002, … when needed."""
     reserved = reserved or set()
 

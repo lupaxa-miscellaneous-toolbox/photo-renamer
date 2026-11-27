@@ -9,12 +9,7 @@ from zoneinfo import ZoneInfo
 import pytest
 from PIL import ExifTags
 
-from lupaxa.photo_renamer.metadata import (
-    _read_image_exif_datetime,
-    _read_video_datetime,
-    extract_timestamp,
-    parse_exif_datetime,
-)
+from lupaxa.photo_renamer.metadata import _read_image_exif_datetime, _read_video_datetime, extract_timestamp, parse_exif_datetime
 
 
 def test_parse_exif_datetime() -> None:
@@ -59,20 +54,9 @@ def test_image_exif_prefers_original_datetime_from_exif_ifd(tmp_path: Path) -> N
 
 def test_video_uses_mediainfo_encoded_date(tmp_path: Path) -> None:
     path = tmp_path / "a.mp4"
-    media_info = SimpleNamespace(
-        tracks=[
-            SimpleNamespace(
-                track_type="General",
-                encoded_date="UTC 2026-08-01 14:55:22",
-                tagged_date=None,
-            )
-        ]
-    )
+    media_info = SimpleNamespace(tracks=[SimpleNamespace(track_type="General", encoded_date="UTC 2026-08-01 14:55:22", tagged_date=None)])
 
-    with patch(
-        "lupaxa.photo_renamer.metadata.MediaInfo.parse",
-        return_value=media_info,
-    ):
+    with patch("lupaxa.photo_renamer.metadata.MediaInfo.parse", return_value=media_info):
         result = _read_video_datetime(path)
 
     assert result == datetime(2026, 8, 1, 14, 55, 22, tzinfo=UTC)
@@ -89,10 +73,7 @@ def test_filesystem_mode_uses_mtime(tmp_path: Path) -> None:
     assert result.value is not None
 
 
-def test_filesystem_mtime_converts_from_local_to_target_timezone(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_filesystem_mtime_converts_from_local_to_target_timezone(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     path = tmp_path / "a.jpg"
     path.write_bytes(b"x")
     timestamp = datetime(2026, 1, 15, 12, 0, tzinfo=UTC).timestamp()
@@ -101,11 +82,7 @@ def test_filesystem_mtime_converts_from_local_to_target_timezone(
     with monkeypatch.context() as context:
         context.setenv("TZ", "America/Los_Angeles")
         time.tzset()
-        result = extract_timestamp(
-            path,
-            mode="filesystem",
-            timezone=ZoneInfo("Europe/Berlin"),
-        )
+        result = extract_timestamp(path, mode="filesystem", timezone=ZoneInfo("Europe/Berlin"))
     time.tzset()
 
     assert result.value == datetime(2026, 1, 15, 13, 0)
@@ -136,10 +113,7 @@ def test_auto_uses_video_metadata_before_filesystem(tmp_path: Path) -> None:
     path = tmp_path / "a.mp4"
     path.write_bytes(b"x")
     metadata_value = datetime(2026, 8, 1, 14, 55, 22)
-    with patch(
-        "lupaxa.photo_renamer.metadata._read_video_datetime",
-        return_value=metadata_value,
-    ):
+    with patch("lupaxa.photo_renamer.metadata._read_video_datetime", return_value=metadata_value):
         result = extract_timestamp(path, mode="auto", timezone=None)
 
     assert result.value == metadata_value
@@ -150,10 +124,7 @@ def test_timezone_conversion_returns_naive_wall_time(tmp_path: Path) -> None:
     path = tmp_path / "a.jpg"
     path.write_bytes(b"x")
     metadata_value = datetime(2026, 8, 1, 12, 0, tzinfo=UTC)
-    with patch(
-        "lupaxa.photo_renamer.metadata._read_image_exif_datetime",
-        return_value=metadata_value,
-    ):
+    with patch("lupaxa.photo_renamer.metadata._read_image_exif_datetime", return_value=metadata_value):
         result = extract_timestamp(path, mode="auto", timezone=ZoneInfo("Europe/Berlin"))
 
     assert result.value == datetime(2026, 8, 1, 14, 0)

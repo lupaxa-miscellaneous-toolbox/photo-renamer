@@ -46,11 +46,7 @@ def _cfg(root: Path, **kwargs: object) -> AppConfig:
 
 
 def _timestamp() -> TimestampResult:
-    return TimestampResult(
-        value=datetime(2026, 8, 1, 13, 45, 22),
-        origin="filesystem",
-        missing=False,
-    )
+    return TimestampResult(value=datetime(2026, 8, 1, 13, 45, 22), origin="filesystem", missing=False)
 
 
 def test_copy_preserves_original(tmp_path: Path) -> None:
@@ -155,29 +151,14 @@ def test_apply_plan_refuses_dangling_symlink_destination(tmp_path: Path, action:
     assert not missing_target.exists()
 
 
-def test_apply_plan_move_refuses_destination_claimed_during_link(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_apply_plan_move_refuses_destination_claimed_during_link(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     source = tmp_path / "photo.jpg"
     source.write_bytes(b"source")
     destination = tmp_path / "renamed" / "photo.jpg"
-    plan = RenamePlan(
-        source=source,
-        destination=destination,
-        detected_source="Camera",
-        timestamp=_timestamp(),
-        action="move",
-        skipped_reason=None,
-    )
+    plan = RenamePlan(source=source, destination=destination, detected_source="Camera", timestamp=_timestamp(), action="move", skipped_reason=None)
     original_link = os.link
 
-    def link_after_competitor(
-        source_path: Path,
-        destination_path: Path,
-        *args: object,
-        **kwargs: object,
-    ) -> None:
+    def link_after_competitor(source_path: Path, destination_path: Path, *args: object, **kwargs: object) -> None:
         destination_path.write_bytes(b"racer")
         original_link(source_path, destination_path, *args, **kwargs)  # type: ignore[arg-type]
 
@@ -194,10 +175,7 @@ def test_operation_failure_is_counted_and_logged(tmp_path: Path) -> None:
     src = tmp_path / "photo.jpg"
     src.write_bytes(b"abc")
     log_file = tmp_path / "events" / "rename.log"
-    with (
-        patch("lupaxa.photo_renamer.pipeline.extract_timestamp", return_value=_timestamp()),
-        patch("lupaxa.photo_renamer.pipeline.apply_plan", side_effect=OSError("disk full")),
-    ):
+    with patch("lupaxa.photo_renamer.pipeline.extract_timestamp", return_value=_timestamp()), patch("lupaxa.photo_renamer.pipeline.apply_plan", side_effect=OSError("disk full")):
         stats = run(_cfg(tmp_path, log_file=log_file))
     assert stats.failed == 1
     assert stats.processed == 0
@@ -209,11 +187,7 @@ def test_operation_failure_is_counted_and_logged(tmp_path: Path) -> None:
 def test_scan_error_is_counted_as_failure(tmp_path: Path) -> None:
     unreadable = tmp_path / "unreadable"
 
-    def scan_with_error(
-        *args: object,
-        errors: list[ScanError],
-        **kwargs: object,
-    ) -> list[MediaFile]:
+    def scan_with_error(*args: object, errors: list[ScanError], **kwargs: object) -> list[MediaFile]:
         errors.append(ScanError(path=unreadable, message="permission denied"))
         return []
 
@@ -243,11 +217,7 @@ def test_workers_two_processes_all_files(tmp_path: Path) -> None:
 
     def fake_timestamp(path: Path, *args: object, **kwargs: object) -> TimestampResult:
         stamp = int(path.stem.split("-")[1])
-        return TimestampResult(
-            value=datetime(2026, 8, 1, 13, 45, stamp),
-            origin="filesystem",
-            missing=False,
-        )
+        return TimestampResult(value=datetime(2026, 8, 1, 13, 45, stamp), origin="filesystem", missing=False)
 
     with patch("lupaxa.photo_renamer.pipeline.extract_timestamp", side_effect=fake_timestamp):
         stats_one = run(_cfg(root_a, workers=1))
@@ -274,11 +244,7 @@ def test_workers_two_processes_all_files_with_collisions(tmp_path: Path) -> None
         # Two groups of three files share a timestamp each, forcing collisions.
         stamp = int(path.stem.split("-")[1])
         group_second = 0 if stamp < 3 else 1
-        return TimestampResult(
-            value=datetime(2026, 8, 1, 13, 45, group_second),
-            origin="filesystem",
-            missing=False,
-        )
+        return TimestampResult(value=datetime(2026, 8, 1, 13, 45, group_second), origin="filesystem", missing=False)
 
     with patch("lupaxa.photo_renamer.pipeline.extract_timestamp", side_effect=fake_timestamp):
         stats_one = run(_cfg(root_a, workers=1))
@@ -301,11 +267,7 @@ def test_keyboard_interrupt_aborts_apply_phase(tmp_path: Path) -> None:
 
     def fake_timestamp(path: Path, *args: object, **kwargs: object) -> TimestampResult:
         stamp = int(path.stem.split("-")[1])
-        return TimestampResult(
-            value=datetime(2026, 8, 1, 13, 45, stamp % 60),
-            origin="filesystem",
-            missing=False,
-        )
+        return TimestampResult(value=datetime(2026, 8, 1, 13, 45, stamp % 60), origin="filesystem", missing=False)
 
     call_count = 0
 
@@ -351,10 +313,7 @@ def test_pipeline_uses_planning_then_apply_progress(tmp_path: Path) -> None:
         descriptions.append(description)
         return FakeProgress()
 
-    with (
-        patch("lupaxa.photo_renamer.pipeline.extract_timestamp", return_value=_timestamp()),
-        patch("lupaxa.photo_renamer.pipeline.make_progress", side_effect=fake_make_progress),
-    ):
+    with patch("lupaxa.photo_renamer.pipeline.extract_timestamp", return_value=_timestamp()), patch("lupaxa.photo_renamer.pipeline.make_progress", side_effect=fake_make_progress):
         run(_cfg(tmp_path, quiet=False, workers=1), console=Console(quiet=True))
 
     assert descriptions == ["Planning media", "Copying media"]
@@ -384,10 +343,7 @@ def test_apply_phase_description_for_move_and_dry_run(tmp_path: Path) -> None:
 
         return _P()
 
-    with (
-        patch("lupaxa.photo_renamer.pipeline.extract_timestamp", return_value=_timestamp()),
-        patch("lupaxa.photo_renamer.pipeline.make_progress", side_effect=fake_make_progress),
-    ):
+    with patch("lupaxa.photo_renamer.pipeline.extract_timestamp", return_value=_timestamp()), patch("lupaxa.photo_renamer.pipeline.make_progress", side_effect=fake_make_progress):
         run(_cfg(tmp_path, quiet=False, move=True), console=Console(quiet=True))
         run(_cfg(tmp_path, quiet=False, dry_run=True), console=Console(quiet=True))
 
